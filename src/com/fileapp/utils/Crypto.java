@@ -10,8 +10,15 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.Key;
 
-public class XCrypto {
+public class Crypto {
 
+    /**
+     * Encrypt a file and copy it to the new destination
+     *
+     * @param key
+     * @param inputFile
+     * @param outputFile
+     */
     public static void encrypt (String key, File inputFile, File outputFile) {
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
@@ -22,7 +29,7 @@ public class XCrypto {
 
             FileOutputStream outputStream = new FileOutputStream(outputFile);
             CipherOutputStream cos = new CipherOutputStream(outputStream, cipher);
-            byte[] buf = new byte[1024];
+            byte[] buf = new byte[8192];
             int read;
             while((read=inputStream.read(buf))!=-1){
                 cos.write(buf,0,read);
@@ -36,6 +43,13 @@ public class XCrypto {
         }
     }
 
+    /**
+     * Get decrypted InputStream of a file
+     *
+     * @param file
+     * @param key
+     * @return
+     */
     public static InputStream getInputStream (File file, String key) {
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
@@ -48,6 +62,17 @@ public class XCrypto {
         }
 
         return null;
+    }
+
+    public static String applyPadding (String key) {
+        if ((key.length() % 16) != 0) {
+            int padding_length = 16 - (key.length() % 16);
+            char pad = 'x';
+            for (int i = 0; i < padding_length; i++) {
+                key += pad;
+            }
+        }
+        return key;
     }
 
 }

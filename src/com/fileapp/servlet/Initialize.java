@@ -1,12 +1,8 @@
 package com.fileapp.servlet;
 
-import com.fileapp.utils.CryptoException;
-import com.fileapp.utils.CryptoUtils;
 import com.fileapp.utils.JSONReply;
-import com.fileapp.utils.XCrypto;
-import org.json.JSONObject;
-import org.json.xjson.XJSONObject;
-import com.fileapp.ResponseError;
+import com.fileapp.utils.ServletHandler;
+import com.fileapp.utils.Crypto;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,9 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @WebServlet(urlPatterns = "/initialize")
 public class Initialize extends HttpServlet {
@@ -30,6 +24,7 @@ public class Initialize extends HttpServlet {
             throws ServletException, IOException
     {
         response.getWriter().println("404");
+        response.getWriter().close();
     }
 
     @Override
@@ -37,52 +32,35 @@ public class Initialize extends HttpServlet {
     doPost (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        ServletHandler servletHandler = new ServletHandler(response);
+
         String path = request.getParameter("path");
         String key = request.getParameter("key");
 
         System.out.println("POST /initialize path=" + path + ", key=" + key);
 
-        PrintWriter out = response.getWriter();
+        servletHandler.areParametersValid(path, key);
+        servletHandler.mustBeDirectory(new File(path));
 
-        if (path == null || key == null) {
+        if ( servletHandler.doesPass() ) {
+            String final_key = Crypto.applyPadding(key);
+            request.getSession().setAttribute("key", final_key);
+
+            ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");
+            String root_path = (String) getServletContext().getAttribute("root_path");
+            executor.execute(new Thread (() -> {
+                ExecuteCopy(path, root_path, final_key);
+            }));
+
+            PrintWriter out = response.getWriter();
             out.print(
-                    JSONReply.error( ResponseError.PARAMETERS_NOT_FOUND.name() )
+                    JSONReply.ok("ok")
             );
             out.close();
-            return;
         }
-
-        File file = new File(path);
-        if (!file.exists()) {
-            out.print(
-                    JSONReply.error( ResponseError.PATH_DOESNT_EXIST.name() )
-            );
-            out.close();
-            return;
-        } else if (!file.isDirectory()) {
-            out.print(
-                    JSONReply.error( ResponseError.PATH_NOT_DIRECTORY.name() )
-            );
-            out.close();
-            return;
-        }
-
-        String final_key = CryptoUtils.applyPadding(key);
-        request.getSession().setAttribute("key", final_key);
-
-        ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");
-        String root_path = (String) getServletContext().getAttribute("root_path");
-        executor.execute(new Thread (() -> {
-            ExecuteCopy(path, root_path, final_key);
-        }));
-
-        out.print(
-                JSONReply.ok("ok")
-        );
-        out.close();
     }
 
-    static void ExecuteCopy (String directory, String target, String key) {
+    private static void ExecuteCopy (String directory, String target, String key) {
         try {
             FileWriter fw = new FileWriter(target + "/.lock");
             fw.write(target);
@@ -102,8 +80,6 @@ public class Initialize extends HttpServlet {
         }
     }
 
-    //C:\Users\Administrator\Pictures
-
     static void CopyFolder (File dir, String to, String key) {
         File[] files = dir.listFiles();
         for (File file : files) {
@@ -112,12 +88,7 @@ public class Initialize extends HttpServlet {
                 (new File(path)).mkdir();
                 CopyFolder(file, path, key);
             } else {
-                //try {
-                    XCrypto.encrypt(key, file, new File(path));
-                    //CryptoUtils.encrypt(key, file, new File(path));
-                //} catch (CryptoException e) {
-                 //   e.printStackTrace();
-                //}
+                Crypto.encrypt(key, file, new File(path));
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.fileapp;
+package com.fileapp.utils;
 
 public enum ResponseError {
     DIRECTORY_NOT_LOADED, INVALID_PATH, PATH_NOT_DIRECTORY, NOT_INITIALIZED, NO_SESSION,
