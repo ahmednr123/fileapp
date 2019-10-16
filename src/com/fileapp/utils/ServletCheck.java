@@ -19,7 +19,6 @@ import java.io.PrintWriter;
 public class ServletCheck {
     private boolean passed = true;
     private HttpServletResponse response = null;
-    private PrintWriter out = null;
 
     public ServletCheck(HttpServletResponse response) {
         this.response = response;
@@ -31,24 +30,13 @@ public class ServletCheck {
      * @param params
      * @return
      */
-    public boolean areParametersValid (String... params) {
+    public void areParametersValid (String... params) {
         for (String param : params) {
             if (param == null || param.isEmpty()) {
-                try {
-                    out = response.getWriter();
-                    out.print(
-                            JSONReply.error(ResponseError.PARAMETERS_NOT_FOUND.name())
-                    );
-                    out.close();
-                    passed = false;
-                    return false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                writeOut (JSONReply.error(ResponseError.PARAMETERS_NOT_FOUND.name()));
+                passed = false;
             }
         }
-
-        return true;
     }
 
     /**
@@ -57,22 +45,11 @@ public class ServletCheck {
      * @param file
      * @return
      */
-    public boolean mustBeFile (File file) {
+    public void mustBeFile (File file) {
         if (!file.exists() || file.isDirectory()) {
-            try {
-                out = response.getWriter();
-                out.print(
-                        JSONReply.error("INVALID_PATH")
-                );
-                out.close();
-                passed = false;
-                return false;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            writeOut (JSONReply.error(ResponseError.INVALID_PATH.name()));
+            passed = false;
         }
-
-        return true;
     }
 
     /**
@@ -81,22 +58,11 @@ public class ServletCheck {
      * @param file
      * @return
      */
-    public boolean mustBeDirectory (File file) {
+    public void mustBeDirectory (File file) {
         if (!file.exists() || !file.isDirectory()) {
-            try {
-                out = response.getWriter();
-                out.print(
-                        JSONReply.error(ResponseError.INVALID_PATH.name() )
-                );
-                out.close();
-                passed = false;
-                return false;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            writeOut (JSONReply.error(ResponseError.INVALID_PATH.name()));
+            passed = false;
         }
-
-        return true;
     }
 
     /**
@@ -106,23 +72,12 @@ public class ServletCheck {
      * @param ctx
      * @return
      */
-    public boolean isApplicationLoaded (ServletContext ctx) {
+    public void isApplicationLoaded (ServletContext ctx) {
         String root = (String) ctx.getAttribute("root_path");
         if ((new File(root + ".lock")).exists()) {
-            try {
-                out = response.getWriter();
-                out.print(
-                        JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name())
-                );
-                out.close();
-                passed = false;
-                return false;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            writeOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
+            passed = false;
         }
-
-        return true;
     }
 
     /**
@@ -137,12 +92,7 @@ public class ServletCheck {
         try {
             key = (String) session.getAttribute("key");
         } catch (Exception e) {
-            try { out = response.getWriter(); }
-            catch (IOException ioe) { ioe.printStackTrace(); }
-            out.print(
-                    JSONReply.error(ResponseError.NO_SESSION.name())
-            );
-            out.close();
+            writeOut (JSONReply.error(ResponseError.NO_SESSION.name()));
             passed = false;
             return null;
         }
@@ -157,30 +107,19 @@ public class ServletCheck {
      * @param ctx
      * @return
      */
-    public boolean isApplicationInitialized (ServletContext ctx) {
+    public void isApplicationInitialized (ServletContext ctx) {
         try {
             String root = (String) ctx.getAttribute("root_path");
             File root_dir = new File(root);
             File[] files = root_dir.listFiles();
 
             if (files == null || files.length == 0) {
-                try {
-                    out = response.getWriter();
-                    out.print(
-                            JSONReply.error(ResponseError.NOT_INITIALIZED.name())
-                    );
-                    out.close();
-                    passed = false;
-                    return false;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                writeOut (JSONReply.error(ResponseError.NOT_INITIALIZED.name()));
+                passed = false;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return true;
     }
 
     /**
@@ -190,5 +129,15 @@ public class ServletCheck {
      */
     public boolean doesPass () {
         return passed;
+    }
+
+    private void writeOut (String data) {
+        try {
+            PrintWriter out = response.getWriter();
+            out.print(data);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

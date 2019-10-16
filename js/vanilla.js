@@ -16,7 +16,10 @@ function $xhrRequest (_url, _onReady, _onProgress, _xhr){
 	var xhr = _xhr || new XMLHttpRequest();
     xhr.addEventListener('progress', _onProgress)
     xhr.onreadystatechange = function(){
-		if(xhr.readyState == 4 && xhr.status == 200){
+		if (xhr.status == 500) {
+            location.reload();
+        }
+        if(xhr.readyState == 4 && xhr.status == 200){
 			_onReady(xhr.responseText, _xhr);
 		}
     }
