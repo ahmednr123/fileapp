@@ -103,11 +103,12 @@ input[type="button"]:hover {
   display: flex;
   justify-content: space-between;
   padding: 7px 14px;
+  font-size: 14px;
   border-bottom: 1px solid lightgrey;
 }
 
 .file:hover {
-  background: #ccc;
+  background: #eee;
 }
 
 .file:last-child {
@@ -139,4 +140,13 @@ input[type="button"]:hover {
   position: absolute;
   top: 0px;
   right: 0px;
+}
+
+#path-div {
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  margin-top: 20px;
+  font-size: 14px;
+  padding: 7px 14px;
+  font-weight: bold;
 }

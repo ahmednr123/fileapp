@@ -27,7 +27,7 @@ public class Download extends HttpServlet {
         System.out.println("GET /download path=" + path);
 
         servletCheck.areParametersValid(path);
-        String key = servletCheck.getKey(request.getSession());
+        String key = servletCheck.getKey(request.getSession(false));
 
         File file = new File (root + path);
         servletCheck.mustBeFile(file);

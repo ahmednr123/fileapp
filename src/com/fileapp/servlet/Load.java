@@ -31,7 +31,7 @@ public class Load extends HttpServlet {
         System.out.println("GET /load path=" + path);
 
         servletCheck.isApplicationInitialized(getServletContext());
-        servletCheck.getKey(request.getSession());
+        servletCheck.getKey(request.getSession(false));
         servletCheck.isApplicationLoaded(getServletContext());
 
         File dir = new File (root + path);

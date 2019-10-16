@@ -3,12 +3,12 @@ package com.fileapp.utils;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
 public class Crypto {
 
@@ -51,13 +51,20 @@ public class Crypto {
      * @return
      */
     public static InputStream getInputStream (File file, String key) {
+        System.out.println("[Before]");
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
+            System.out.println("[Inside crypto]");
+            System.out.println("key: " + key);
+            System.out.println("file_exists: " + file.exists());
+            System.out.println("some cipher info: " + cipher.toString());
+
             return (new CipherInputStream(new FileInputStream(file), cipher));
-        } catch (Exception e) {
+        } catch (FileNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+            System.out.println("[Weird exception]");
             e.printStackTrace();
         }
 

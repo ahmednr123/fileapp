@@ -26,7 +26,7 @@ public class View extends HttpServlet {
         System.out.println("GET /view path=" + path);
 
         servletCheck.areParametersValid(path);
-        String key = servletCheck.getKey(request.getSession());
+        String key = servletCheck.getKey(request.getSession(false));
 
         File file = new File (root + path);
         servletCheck.mustBeFile(file);
@@ -53,6 +53,7 @@ public class View extends HttpServlet {
 
             while ((bytesRead = inStream.read(buffer)) != -1) {
                 outStream.write(buffer, 0, bytesRead);
+
             }
 
             inStream.close();

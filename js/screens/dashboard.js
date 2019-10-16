@@ -1,9 +1,12 @@
 const DashboardScreen = {
 
 	html: {
-		base:`
+		base: () => `
 		<span id="picture-name"></span>
 		<img id="picture-frame" />
+		<div id="path-div">
+			${(_global.path=="")?"/":_global.path}
+		</div>
 		<div id="file-list" class="vertical"> Error </div>
 		`,
 
@@ -45,6 +48,10 @@ const DashboardScreen = {
 		let filename = filepath.split('/')
 		filename = filename[filename.length-1]
 
+		$forEach(".close-btn", (el) => {
+			el.parentElement.removeChild(el);
+		})
+
 		let close_btn = document.createElement("div");
 		close_btn.innerHTML = "Close";
 		close_btn.classList.add("tiny-btn");
@@ -74,7 +81,7 @@ const DashboardScreen = {
 
 	render: function (file_list) {
 
-		app.innerHTML = this.html.base;
+		app.innerHTML = this.html.base();
 
 		if (file_list.length > 1) {
 			$("#file-list").innerHTML = "";
