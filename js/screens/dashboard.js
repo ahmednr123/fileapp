@@ -2,14 +2,20 @@ const DashboardScreen = {
 
 	html: {
 		base:`
-		<div id="picture-frame"><div>
-		<div id="file-list" class="vertical"> No files found </div>
+		<span id="picture-name"></span>
+		<img id="picture-frame" />
+		<div id="file-list" class="vertical"> Error </div>
 		`,
 
-		file: (filename, isDir) => `
+		file: (filename, isDir, isImage) => `
 			<span class="${(isDir)?'dir-icon':''}">${filename}</span>
-			${(!isDir)?'<span class="tiny-btn download-btn">Download</span>':''}
-		`
+			<span>
+				${(isImage)?'<span class="tiny-btn view-btn">View</span>':''}
+				${(!isDir)?'<span class="tiny-btn download-btn">Download</span>':''}
+			</span>
+		`,
+
+		close_picture_frame: `<div class="tiny-btn" id="close_picture_frame">close</div>`
 	},
 
 	change_dir: function () {
@@ -35,6 +41,37 @@ const DashboardScreen = {
 		})
 	},
 
+	load_img: function (filepath) {
+		let filename = filepath.split('/')
+		filename = filename[filename.length-1]
+
+		let close_btn = document.createElement("div");
+		close_btn.innerHTML = "Close";
+		close_btn.classList.add("tiny-btn");
+		close_btn.classList.add("close-btn");
+		close_btn.addEventListener("click", this.close_picture_frame);
+		app.appendChild(close_btn);
+
+		$("#picture-name").innerHTML = filename;
+		$("#picture-frame").src = "/FileApp/view?path="+filepath;
+		$("#picture-frame").onload = function () {
+			let width = $("#picture-frame").width;
+			let height = $("#picture-frame").height;
+
+			$("#picture-frame").width = height;
+			$("#picture-frame").height = width;
+
+			$("#picture-frame").style.width = "100%";
+			$("#picture-frame").style.height = "auto";
+		}
+	},
+
+	close_picture_frame: function () {
+		$("#picture-name").innerHTML = "";
+		$("#picture-frame").src = "";
+		this.parentElement.removeChild(this);
+	},
+
 	render: function (file_list) {
 
 		app.innerHTML = this.html.base;
@@ -47,7 +84,14 @@ const DashboardScreen = {
 			let el = document.createElement("div");
 			el.classList.add("file");
 			el.setAttribute("path", _global.path + "/" + file.name);
-			el.innerHTML = this.html.file(file.name, file.isDirectory);
+
+			let ext = file.name.split('.');
+			ext = ext[ext.length-1];
+			console.log(`Filename: ${file.name}, Extension: ${ext}`);
+			let isImage = _global.image_exts.includes(ext);
+			console.log(`isImage: ${isImage}`);
+
+			el.innerHTML = this.html.file(file.name, file.isDirectory, isImage);
 
 			if (file.isDirectory) {
 				el.style.cursor = "pointer";
@@ -57,13 +101,20 @@ const DashboardScreen = {
 			$("#file-list").appendChild(el);
 		}
 
+		$forEach(".view-btn", function (el) {
+			let path = el.parentElement.parentElement.getAttribute("path");
+			el.addEventListener("click", function () {
+				DashboardScreen.load_img(path)
+			})
+		})
+
 		$forEach(".download-btn", function (el) {
-			let path = el.parentElement.getAttribute("path");
+			let path = el.parentElement.parentElement.getAttribute("path");
 			el.addEventListener('click', function () {
 				console.log("Downloading: " + path);
 				window.open(
-					'http://localhost:8080/FileApp/download?path='+path,
-					'_blank' // <- This is what makes it open in a new window.
+					'/FileApp/download?path='+path,
+					'_blank'
 				);
 			});
 		})

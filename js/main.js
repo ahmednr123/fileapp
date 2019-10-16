@@ -26,6 +26,7 @@ _global.loading_screen = `<div class="lds-facebook"><div></div><div></div><div><
 
 _global.file_list = [];
 _global.path = "";
+_global.image_exts = ["png","jpeg","jpg","svg","gif"]
 _global.copy_wait = {
 	start: function () {
 		_global._copy_interval = 

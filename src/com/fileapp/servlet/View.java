@@ -1,27 +1,20 @@
 package com.fileapp.servlet;
 
 import com.fileapp.ResponseError;
-import com.fileapp.utils.CryptoUtils;
 import com.fileapp.utils.JSONReply;
 import com.fileapp.utils.XCrypto;
-import org.apache.commons.io.IOUtils;
 
-import javax.crypto.Cipher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.util.Calendar;
-import java.util.concurrent.ExecutorService;
 
-@WebServlet(urlPatterns = "/download")
-public class Download extends HttpServlet {
-
+@WebServlet(urlPatterns = "/view")
+public class View extends HttpServlet {
     @Override
     protected void
     doGet (HttpServletRequest request, HttpServletResponse response)
@@ -30,7 +23,7 @@ public class Download extends HttpServlet {
         String path = request.getParameter("path");
         String root = (String) getServletContext().getAttribute("root_path");
 
-        System.out.println("GET /download path=" + path);
+        System.out.println("GET /view path=" + path);
 
         if (path == null || path.equals("")) {
             PrintWriter out = response.getWriter();
@@ -79,10 +72,6 @@ public class Download extends HttpServlet {
 
         response.setContentType(mimeType);
 
-        String headerKey = "Content-Disposition";
-        String headerValue = String.format("attachment; filename=\"%s\"", file.getName());
-        response.setHeader(headerKey, headerValue);
-
         OutputStream outStream = response.getOutputStream();
 
         byte[] buffer = new byte[8192];
@@ -95,13 +84,4 @@ public class Download extends HttpServlet {
         inStream.close();
         outStream.close();
     }
-
-    @Override
-    protected void
-    doPost (HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        response.getWriter().println("404");
-    }
-
 }

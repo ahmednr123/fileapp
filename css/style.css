@@ -52,6 +52,7 @@ file-app {
   display: block;
   width: 600px;
   margin: 0 auto;
+  position: relative;
 }
 
 label {
@@ -95,6 +96,7 @@ input[type="button"]:hover {
   border: 1px solid lightgrey;
   border-radius: 5px;
   display: block;
+  margin-top: 20px;
 }
 
 .file {
@@ -116,6 +118,7 @@ input[type="button"]:hover {
   font-size: 12px;
   color: darkblue;
   cursor: pointer;
+  margin-left: 8px;
 }
 
 .dir-icon:before {
@@ -123,4 +126,17 @@ input[type="button"]:hover {
   margin-right: 5px;
   color: grey;
   font-size: 12px;
+}
+
+#picture-name {
+  padding-bottom: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
 }
