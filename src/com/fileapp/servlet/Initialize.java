@@ -1,7 +1,7 @@
 package com.fileapp.servlet;
 
 import com.fileapp.utils.JSONReply;
-import com.fileapp.utils.ServletHandler;
+import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
 
 import javax.servlet.ServletException;
@@ -32,17 +32,17 @@ public class Initialize extends HttpServlet {
     doPost (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        ServletHandler servletHandler = new ServletHandler(response);
+        ServletCheck servletCheck = new ServletCheck(response);
 
         String path = request.getParameter("path");
         String key = request.getParameter("key");
 
         System.out.println("POST /initialize path=" + path + ", key=" + key);
 
-        servletHandler.areParametersValid(path, key);
-        servletHandler.mustBeDirectory(new File(path));
+        servletCheck.areParametersValid(path, key);
+        servletCheck.mustBeDirectory(new File(path));
 
-        if ( servletHandler.doesPass() ) {
+        if ( servletCheck.doesPass() ) {
             String final_key = Crypto.applyPadding(key);
             request.getSession().setAttribute("key", final_key);
 

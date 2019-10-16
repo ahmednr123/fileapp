@@ -10,18 +10,18 @@ import java.io.PrintWriter;
 /**
  * To do common checks within a servlet
  *
- * If a check fails the ServletHandler class sends
+ * If a check fails the ServletCheck class sends
  * an error message to the client
  *
  * If a single check is failed, doesPass() returns
  * false
  */
-public class ServletHandler {
+public class ServletCheck {
     private boolean passed = true;
     private HttpServletResponse response = null;
     private PrintWriter out = null;
 
-    public ServletHandler (HttpServletResponse response) {
+    public ServletCheck(HttpServletResponse response) {
         this.response = response;
     }
 

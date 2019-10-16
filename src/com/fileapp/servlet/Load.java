@@ -1,6 +1,6 @@
 package com.fileapp.servlet;
 
-import com.fileapp.utils.ServletHandler;
+import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -22,7 +22,7 @@ public class Load extends HttpServlet {
     doGet (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        ServletHandler servletHandler = new ServletHandler(response);
+        ServletCheck servletCheck = new ServletCheck(response);
 
         String path = request.getParameter("path");
         String root = (String) getServletContext().getAttribute("root_path");
@@ -30,14 +30,14 @@ public class Load extends HttpServlet {
 
         System.out.println("GET /load path=" + path);
 
-        servletHandler.isApplicationInitialized(getServletContext());
-        servletHandler.getKey(request.getSession());
-        servletHandler.isApplicationLoaded(getServletContext());
+        servletCheck.isApplicationInitialized(getServletContext());
+        servletCheck.getKey(request.getSession());
+        servletCheck.isApplicationLoaded(getServletContext());
 
         File dir = new File (root + path);
-        servletHandler.mustBeDirectory(dir);
+        servletCheck.mustBeDirectory(dir);
 
-        if (servletHandler.doesPass()) {
+        if (servletCheck.doesPass()) {
             JSONArray content = new JSONArray();
             File[] files = dir.listFiles();
             for (File file : files) {

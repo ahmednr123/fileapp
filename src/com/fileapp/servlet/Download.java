@@ -1,6 +1,6 @@
 package com.fileapp.servlet;
 
-import com.fileapp.utils.ServletHandler;
+import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
 
 import javax.servlet.ServletContext;
@@ -19,20 +19,20 @@ public class Download extends HttpServlet {
     doGet (HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        ServletHandler servletHandler = new ServletHandler(response);
+        ServletCheck servletCheck = new ServletCheck(response);
 
         String path = request.getParameter("path");
         String root = (String) getServletContext().getAttribute("root_path");
 
         System.out.println("GET /download path=" + path);
 
-        servletHandler.areParametersValid(path);
-        String key = servletHandler.getKey(request.getSession());
+        servletCheck.areParametersValid(path);
+        String key = servletCheck.getKey(request.getSession());
 
         File file = new File (root + path);
-        servletHandler.mustBeFile(file);
+        servletCheck.mustBeFile(file);
 
-        if ( servletHandler.doesPass() ) {
+        if ( servletCheck.doesPass() ) {
             System.out.println("PATH: " + root+path);
             System.out.println("FILE NAME: " + file.getName());
 
