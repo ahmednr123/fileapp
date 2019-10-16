@@ -21,6 +21,7 @@
                 <pathelement path="WEB-INF\lib\servlet-api.jar"/>
                 <pathelement path="WEB-INF\lib\json-20190722.jar" />
                 <pathelement path="WEB-INF\lib\xjson.jar" />
+                <pathelement path="WEB-INF\lib\commons-io-2.6.jar" />
             </classpath>
         </javac>
     </target>

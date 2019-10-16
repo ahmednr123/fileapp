@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6848942b-c230-4ed2-ba0a-352a790ba663" name="Default Changelist" comment="" />
+    <list default="true" id="6848942b-c230-4ed2-ba0a-352a790ba663" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/commons_io_2_6.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FileApp.iml" beforeDir="false" afterPath="$PROJECT_DIR$/FileApp.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.xml" beforeDir="false" afterPath="$PROJECT_DIR$/build.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/Download.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/Download.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/Initialize.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/Initialize.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/Load.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/Load.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/utils/CryptoUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/utils/CryptoUtils.java" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -11,13 +22,18 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1SEX7sPpDfB59xg3uEy1kP1BziP" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="C:/Program Files/Apache Software Foundation/Tomcat 9.0/webapps/FileApp/WEB-INF/lib/servlet-api.jar!/" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/WEB-INF/lib/xjson.jar!/" />
     <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -40,15 +56,9 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy">
-      <setting name="path" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="file://$PROJECT_DIR$" />
-      <setting name="debug" value="false" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="FileApp" type="AntRunConfiguration">
+      <antsettings antfile="file://$PROJECT_DIR$/build.xml" target="deploy" />
+      <method v="2" />
     </configuration>
   </component>
   <component name="SvnConfiguration">
@@ -63,5 +73,16 @@
       <updated>1571129564814</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

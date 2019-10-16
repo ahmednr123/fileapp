@@ -1,0 +1,126 @@
+/* ============================================= */
+/* ===                LOADER                 === */
+/* ============================================= */
+
+.lds-facebook {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-top: 200px;
+  margin-left: calc(50% - 32px);
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 6px;
+  width: 13px;
+  background: #ddd;
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 6px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 26px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 45px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 6px;
+    height: 51px;
+  }
+  50%, 100% {
+    top: 19px;
+    height: 26px;
+  }
+}
+
+
+/* ============================================= */
+
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+
+file-app {
+  display: block;
+  width: 600px;
+  margin: 0 auto;
+}
+
+label {
+  margin-bottom: 5px;
+}
+
+input {
+  padding: 5px;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+  outline: 0;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+  border: 1px solid #999;
+}
+
+input[type="button"]:hover {
+  background: #ccc;
+  cursor: pointer;
+}
+
+.vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.init-form {
+  width: 300px;
+  margin: 80px auto;
+}
+
+.init-form > section {
+  margin-bottom: 20px
+}
+
+
+/* ==================================== */
+
+#file-list {
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  display: block;
+}
+
+.file {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 14px;
+  border-bottom: 1px solid lightgrey;
+}
+
+.file:hover {
+  background: #ccc;
+}
+
+.file:last-child {
+  border-bottom: 0px;
+}
+
+.tiny-btn {
+  font-size: 12px;
+  color: darkblue;
+  cursor: pointer;
+}
+
+.dir-icon:before {
+  content: "[d]";
+  margin-right: 5px;
+  color: grey;
+  font-size: 12px;
+}
