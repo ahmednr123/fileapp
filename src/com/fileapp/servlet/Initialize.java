@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.util.concurrent.ExecutorService;
 
 @WebServlet(urlPatterns = "/initialize")
@@ -43,13 +44,12 @@ public class Initialize extends HttpServlet {
         servletCheck.mustBeDirectory(new File(path));
 
         if ( servletCheck.doesPass() ) {
-            String final_key = Crypto.applyPadding(key);
-            request.getSession().setAttribute("key", final_key);
+            request.getSession().setAttribute("key", key);
 
             ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");
             String root_path = (String) getServletContext().getAttribute("root_path");
             executor.execute(new Thread (() -> {
-                ExecuteCopy(path, root_path, final_key);
+                ExecuteCopy(path, root_path, key);
             }));
 
             PrintWriter out = response.getWriter();
@@ -82,6 +82,8 @@ public class Initialize extends HttpServlet {
 
     static void CopyFolder (File dir, String to, String key) {
         File[] files = dir.listFiles();
+
+        if (files != null)
         for (File file : files) {
             String path = to + "/" + file.getName();
             if (file.isDirectory()) {

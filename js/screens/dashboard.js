@@ -7,7 +7,7 @@ const DashboardScreen = {
 		<div id="path-div">
 			${(_global.path=="")?"/":_global.path}
 		</div>
-		<div id="file-list" class="vertical"> Error </div>
+		<div id="file-list" class="vertical"></div>
 		`,
 
 		file: (filename, isDir, isImage) => `
@@ -34,7 +34,8 @@ const DashboardScreen = {
 		}
 
 		app.innerHTML = _global.loading_screen;
-		$xhrRequest(`/FileApp/load?path=${dir_path}`, function (res) {
+		console.log(encodeURIComponent(dir_path));
+		$xhrRequest(`/FileApp/load?path=${encodeURIComponent(dir_path)}`, function (res) {
 			let json = JSON.parse(res);
 			if (json.reply != false) {
 				console.log("_global.path set to " + dir_path)
@@ -45,6 +46,13 @@ const DashboardScreen = {
 	},
 
 	load_img: function (filepath) {
+		$xhrRequest("/FileApp/session", (res) => {
+			let json = JSON.parse(res);
+			if (json.reply == false) {
+				location.reload();
+			}
+		})
+
 		let filename = filepath.split('/')
 		filename = filename[filename.length-1]
 
@@ -60,7 +68,7 @@ const DashboardScreen = {
 		app.appendChild(close_btn);
 
 		$("#picture-name").innerHTML = filename;
-		$("#picture-frame").src = "/FileApp/view?path="+filepath;
+		$("#picture-frame").src = "/FileApp/view?path="+encodeURIComponent(filepath);
 		$("#picture-frame").onload = function () {
 			let width = $("#picture-frame").width;
 			let height = $("#picture-frame").height;
@@ -120,7 +128,7 @@ const DashboardScreen = {
 			el.addEventListener('click', function () {
 				console.log("Downloading: " + path);
 				window.open(
-					'/FileApp/download?path='+path,
+					'/FileApp/download?path='+encodeURIComponent(path),
 					'_blank'
 				);
 			});

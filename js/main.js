@@ -2,6 +2,7 @@ $xhrRequest('/FileApp/load', load_request)
 
 function load_request (res) {
 	let json = JSON.parse(res);
+	console.log("===> LOADED REQUEST: "+res);
 	if (json.reply == false) {
 		if (json.error == Response.NO_SESSION 
 			|| json.error == Response.NOT_INITIALIZED) 

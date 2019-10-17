@@ -74,7 +74,7 @@ public class ServletCheck {
      */
     public void isApplicationLoaded (ServletContext ctx) {
         String root = (String) ctx.getAttribute("root_path");
-        if ((new File(root + ".lock")).exists()) {
+        if ((new File(root + "/.lock")).exists()) {
             writeOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
             passed = false;
         }
@@ -131,6 +131,11 @@ public class ServletCheck {
         return passed;
     }
 
+    /**
+     * Respond to the request
+     *
+     * @param data
+     */
     private void writeOut (String data) {
         try {
             PrintWriter out = response.getWriter();

@@ -20,6 +20,7 @@ public class Crypto {
      * @param outputFile
      */
     public static void encrypt (String key, File inputFile, File outputFile) {
+        key = applyPadding(key);
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
@@ -39,7 +40,7 @@ public class Crypto {
             outputStream.flush();
             cos.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Not allowed to access: " + inputFile.getAbsolutePath());
         }
     }
 
@@ -52,6 +53,7 @@ public class Crypto {
      */
     public static InputStream getInputStream (File file, String key) {
         System.out.println("[Before]");
+        key = applyPadding(key);
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
@@ -71,7 +73,7 @@ public class Crypto {
         return null;
     }
 
-    public static String applyPadding (String key) {
+    private static String applyPadding (String key) {
         if ((key.length() % 16) != 0) {
             int padding_length = 16 - (key.length() % 16);
             char pad = 'x';

@@ -40,12 +40,15 @@ public class Load extends HttpServlet {
         if (servletCheck.doesPass()) {
             JSONArray content = new JSONArray();
             File[] files = dir.listFiles();
-            for (File file : files) {
-                JSONObject json = new JSONObject();
-                json.put("name", file.getName());
-                json.put("isDirectory", file.isDirectory());
 
-                content.put(json);
+            if (files != null) {
+                for (File file : files) {
+                    JSONObject json = new JSONObject();
+                    json.put("name", file.getName());
+                    json.put("isDirectory", file.isDirectory());
+
+                    content.put(json);
+                }
             }
 
             PrintWriter out = response.getWriter();
@@ -65,7 +68,6 @@ public class Load extends HttpServlet {
         System.out.println("POST /load key=" + key);
 
         if (key != null) {
-            key = Crypto.applyPadding(key);
             request.getSession().setAttribute("key", key);
             out.print("ok");
         } else {
