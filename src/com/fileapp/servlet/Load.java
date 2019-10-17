@@ -1,7 +1,6 @@
 package com.fileapp.servlet;
 
 import com.fileapp.utils.ServletCheck;
-import com.fileapp.utils.Crypto;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

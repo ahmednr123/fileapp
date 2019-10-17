@@ -70,14 +70,11 @@ const DashboardScreen = {
 		$("#picture-name").innerHTML = filename;
 		$("#picture-frame").src = "/FileApp/view?path="+encodeURIComponent(filepath);
 		$("#picture-frame").onload = function () {
-			let width = $("#picture-frame").width;
-			let height = $("#picture-frame").height;
-
-			$("#picture-frame").width = height;
-			$("#picture-frame").height = width;
-
-			$("#picture-frame").style.width = "100%";
+			$("#picture-frame").style.maxWidth = "580px";
 			$("#picture-frame").style.height = "auto";
+			$("#picture-frame").style.margin = "0 auto";
+			$("#picture-frame").style.border = "1px solid lightgray";
+			$("#picture-frame").style.padding = "10px";
 		}
 	},
 
