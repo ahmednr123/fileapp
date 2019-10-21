@@ -52,21 +52,14 @@ public class Crypto {
      * @return
      */
     public static InputStream getInputStream (File file, String key) {
-        System.out.println("[Before]");
         key = applyPadding(key);
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-            System.out.println("[Inside crypto]");
-            System.out.println("key: " + key);
-            System.out.println("file_exists: " + file.exists());
-            System.out.println("some cipher info: " + cipher.toString());
-
             return (new CipherInputStream(new FileInputStream(file), cipher));
         } catch (FileNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-            System.out.println("[Weird exception]");
             e.printStackTrace();
         }
 
