@@ -1,5 +1,7 @@
 package com.fileapp.servlet;
 
+import com.fileapp.storage.GoogleDrive;
+import com.fileapp.storage.LocalDrive;
 import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
 
@@ -29,14 +31,12 @@ public class Download extends HttpServlet {
         servletCheck.areParametersValid(path);
         String key = servletCheck.getKey(request.getSession(false));
 
-        File file = new File (root + path);
-        servletCheck.mustBeFile(file);
+        /*File file = new File (root + path);
+        servletCheck.mustBeFile(file);*/
 
         if ( servletCheck.doesPass() ) {
-            System.out.println("PATH: " + root+path);
-            System.out.println("FILE NAME: " + file.getName());
 
-            InputStream inStream = Crypto.getInputStream(file, key);
+            InputStream inStream = GoogleDrive.getInputStream(path, key);//Crypto.getDecryptedInputStream(file, key);
             ServletContext context = getServletContext();
 
             String mimeType = context.getMimeType(root + path);
@@ -48,7 +48,7 @@ public class Download extends HttpServlet {
             response.setContentType(mimeType);
 
             String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", file.getName());
+            String headerValue = String.format("attachment; filename=\"%s\"", path);
             response.setHeader(headerKey, headerValue);
 
             OutputStream outStream = response.getOutputStream();

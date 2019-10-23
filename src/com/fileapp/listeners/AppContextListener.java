@@ -1,5 +1,7 @@
 package com.fileapp.listeners;
 
+import com.fileapp.storage.GoogleDrive;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -15,6 +17,8 @@ public class AppContextListener implements ServletContextListener {
     public void
     contextInitialized(ServletContextEvent servletContextEvent)
     {
+        //GoogleDrive.executeCopy( "C:\\Users\\Administrator\\Pictures","ahmed");
+
         String root_path = "enc_root";
         if (!(new File(root_path)).exists()) {
             System.out.println();

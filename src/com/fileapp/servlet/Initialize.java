@@ -1,5 +1,7 @@
 package com.fileapp.servlet;
 
+import com.fileapp.storage.GoogleDrive;
+import com.fileapp.storage.LocalDrive;
 import com.fileapp.utils.JSONReply;
 import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
@@ -48,7 +50,7 @@ public class Initialize extends HttpServlet {
             ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");
             String root_path = (String) getServletContext().getAttribute("root_path");
             executor.execute(new Thread (() -> {
-                ExecuteCopy(path, root_path, key);
+                GoogleDrive.executeCopy(path, key);
             }));
 
             PrintWriter out = response.getWriter();
@@ -56,41 +58,6 @@ public class Initialize extends HttpServlet {
                     JSONReply.ok("ok")
             );
             out.close();
-        }
-    }
-
-    private static void ExecuteCopy (String directory, String target, String key) {
-        try {
-            FileWriter fw = new FileWriter(target + "/.lock");
-            fw.write(target);
-            fw.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        File rootDirectory = new File(directory);
-        CopyFolder(rootDirectory, target, key);
-
-        File lock_file = new File (target + "/.lock");
-        if (lock_file.delete()) {
-            System.out.println("Directory copied successfully");
-        } else {
-            System.out.println("Error copying directory");
-        }
-    }
-
-    private static void CopyFolder (File dir, String to, String key) {
-        File[] files = dir.listFiles();
-
-        if (files != null)
-        for (File file : files) {
-            String path = to + "/" + file.getName();
-            if (file.isDirectory()) {
-                (new File(path)).mkdir();
-                CopyFolder(file, path, key);
-            } else {
-                Crypto.encrypt(key, file, new File(path));
-            }
         }
     }
 

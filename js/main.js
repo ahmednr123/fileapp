@@ -2,7 +2,7 @@ $xhrRequest('/FileApp/load', load_request)
 
 function load_request (res) {
 	let json = JSON.parse(res);
-	console.log("===> LOADED REQUEST: "+res);
+	console.log("===> LOADED REQUEST: " + res);
 	if (json.reply == false) {
 		if (json.error == Response.NO_SESSION 
 			|| json.error == Response.NOT_INITIALIZED) 
@@ -15,7 +15,7 @@ function load_request (res) {
 	} else {
 		_global.copy_wait.stop();
 		if (_global.path != "") {
-			_global.file_list = [{name:"..", isDirectory:true}].concat(json);
+			_global.file_list = [{name:"..", path: "/..", isDirectory:true}].concat(json);
 		} else {
 			_global.file_list = json;
 		}

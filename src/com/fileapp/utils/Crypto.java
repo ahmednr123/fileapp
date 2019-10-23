@@ -51,12 +51,42 @@ public class Crypto {
      * @param key
      * @return
      */
-    public static InputStream getInputStream (File file, String key) {
+    public static InputStream getDecryptedInputStream (File file, String key) {
         key = applyPadding(key);
         try {
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+            return (new CipherInputStream(new FileInputStream(file), cipher));
+        } catch (FileNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static InputStream getNewInputStream (InputStream is, String key) {
+        key = applyPadding(key);
+        try {
+            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+            return (new CipherInputStream(is, cipher));
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static InputStream getEncryptedInputStream (File file, String key) {
+        key = applyPadding(key);
+        try {
+            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
             return (new CipherInputStream(new FileInputStream(file), cipher));
         } catch (FileNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {

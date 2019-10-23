@@ -1,5 +1,8 @@
 package com.fileapp.utils;
 
+import com.fileapp.storage.GoogleDrive;
+import com.fileapp.storage.LocalDrive;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,11 +76,16 @@ public class ServletCheck {
      * @return
      */
     public void isApplicationLoaded (ServletContext ctx) {
-        String root = (String) ctx.getAttribute("root_path");
-        if ((new File(root + "/.lock")).exists()) {
+        if (!GoogleDrive.isLoaded()) {
+            System.out.println("APPLICATION IS NOT LOADED");
             writeOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
             passed = false;
         }
+        /*String root = (String) ctx.getAttribute("root_path");
+        if ((new File(root + "/.lock")).exists()) {
+            writeOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
+            passed = false;
+        }*/
     }
 
     /**
@@ -108,7 +116,12 @@ public class ServletCheck {
      * @return
      */
     public void isApplicationInitialized (ServletContext ctx) {
-        try {
+        System.out.println("APPLICATION IS NOT INITIALIZED");
+        if (!GoogleDrive.isInitialized()) {
+            writeOut (JSONReply.error(ResponseError.NOT_INITIALIZED.name()));
+            passed = false;
+        }
+        /*try {
             String root = (String) ctx.getAttribute("root_path");
             File root_dir = new File(root);
             File[] files = root_dir.listFiles();
@@ -119,7 +132,7 @@ public class ServletCheck {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     /**

@@ -95,7 +95,7 @@ const DashboardScreen = {
 		for (let file of file_list) {
 			let el = document.createElement("div");
 			el.classList.add("file");
-			el.setAttribute("path", _global.path + "/" + file.name);
+			el.setAttribute("path", file.path);//_global.path + "/" + file.name);
 
 			let ext = file.name.split('.');
 			ext = ext[ext.length-1];
