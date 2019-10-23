@@ -79,7 +79,7 @@ public class Initialize extends HttpServlet {
         }
     }
 
-    static void CopyFolder (File dir, String to, String key) {
+    private static void CopyFolder (File dir, String to, String key) {
         File[] files = dir.listFiles();
 
         if (files != null)

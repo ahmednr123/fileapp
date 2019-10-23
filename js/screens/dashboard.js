@@ -46,13 +46,6 @@ const DashboardScreen = {
 	},
 
 	load_img: function (filepath) {
-		$xhrRequest("/FileApp/session", (res) => {
-			let json = JSON.parse(res);
-			if (json.reply == false) {
-				location.reload();
-			}
-		})
-
 		let filename = filepath.split('/')
 		filename = filename[filename.length-1]
 
@@ -68,7 +61,10 @@ const DashboardScreen = {
 		app.appendChild(close_btn);
 
 		$("#picture-name").innerHTML = filename;
-		$("#picture-frame").src = "/FileApp/view?path="+encodeURIComponent(filepath);
+		$("#picture-frame").onerror = () => {
+		    console.log("error loading image");
+		    location.reload();
+		}
 		$("#picture-frame").onload = function () {
 			$("#picture-frame").style.maxWidth = "580px";
 			$("#picture-frame").style.height = "auto";
@@ -76,11 +72,15 @@ const DashboardScreen = {
 			$("#picture-frame").style.border = "1px solid lightgray";
 			$("#picture-frame").style.padding = "10px";
 		}
+
+        $("#picture-name").style.display = "block";
+        $("#picture-frame").style.display = "block";
+		$("#picture-frame").src = "/FileApp/view?path="+encodeURIComponent(filepath);
 	},
 
 	close_picture_frame: function () {
-		$("#picture-name").innerHTML = "";
-		$("#picture-frame").src = "";
+	    $("#picture-name").style.display = "none";
+	    $("#picture-frame").style.display = "none";
 		this.parentElement.removeChild(this);
 	},
 

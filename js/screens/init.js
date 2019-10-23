@@ -5,11 +5,11 @@ const InitScreen = {
 		`<div class="vertical init-form">
 			<section class="vertical">
 				<label>Path</label>
-				<input type="text" id="path">
+				<input type="text" name="file_path" id="path">
 			</section>
 			<section class="vertical">
 				<label>Key</label>
-				<input type="password" id="key">
+				<input type="password" name="enc_key" id="key">
 			</section>
 			<section class="vertical">
 				<input type="button" value="Encrypt" id="encrypt">

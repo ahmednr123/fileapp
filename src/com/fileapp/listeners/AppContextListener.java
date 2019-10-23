@@ -15,7 +15,7 @@ public class AppContextListener implements ServletContextListener {
     public void
     contextInitialized(ServletContextEvent servletContextEvent)
     {
-        String root_path = "C:/Users/Administrator/Documents/fileapp_dir";
+        String root_path = "enc_root";
         if (!(new File(root_path)).exists()) {
             System.out.println();
             System.out.println();
@@ -31,7 +31,7 @@ public class AppContextListener implements ServletContextListener {
         ServletContext ctx = servletContextEvent.getServletContext();
         ctx.setAttribute("root_path", root_path);
 
-        ExecutorService executor = Executors.newFixedThreadPool(100);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
         ctx.setAttribute("executor", executor);
     }
 
