@@ -1,6 +1,5 @@
-package com.fileapp.utils;
+package com.fileapp.googledrive;
 
-import com.fileapp.storage.EncryptedFileContent;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
