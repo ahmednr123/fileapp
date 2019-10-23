@@ -1,6 +1,7 @@
 package com.fileapp.storage;
 
 import com.fileapp.utils.Crypto;
+import com.fileapp.utils.GoogleDriveUtil;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -26,13 +27,15 @@ import java.io.*;
 import java.util.Collections;
 import java.util.List;
 
-public class GoogleDrive {
+public class GoogleDrive implements StorageStrategy {
+    private static final String ROOT = "ENC_ROOT";
+
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
     private static Drive drive = null;
-    private static boolean lock = false;
+    private static boolean LOCK = false;
 
     /**
      * Global instance of the scopes required by this quickstart.
@@ -62,71 +65,43 @@ public class GoogleDrive {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
 
-    private static String root = "enc_root";
-
-    public static boolean isLoaded () {
-        return !lock;
-    }
-
-    public static boolean isInitialized () {
+    public
+    GoogleDrive() {
         try {
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            FileList result = drive.files().list()
-                    .setQ("parents in 'root'")
-                    .setFields("nextPageToken, files(id, name, mimeType)")
-                    .execute();
-            List<File> files = result.getFiles();
-            if (files != null && !files.isEmpty()) {
-                System.out.println("Files:");
-                for (File root_file : files) {
-                    System.out.printf("FROM ROOT: %s (%s) - %s\n", root_file.getName(), root_file.getId(), root_file.getMimeType());
-                    if ("ENC_ROOT".equals(root_file.getName())){
-                        return true;
-                    }
-                }
-            }
+
+    public boolean isLoaded () {
+        return !LOCK;
+    }
+
+    public boolean isInitialized () {
+        try {
+            return GoogleDriveUtil.doesFileExist(drive, ROOT, "root");
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
-
-        return false;
     }
 
-    public static JSONArray getFileList (String ID) {
+    public JSONArray getFileList (String ID) {
         JSONArray content = new JSONArray();
 
         try {
-            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
-
-            if (ID != null && !ID.equals("")) {
-                File file = drive.files().get(ID).execute();
-                if ( !file.getMimeType().equals("application/vnd.google-apps.folder") ) {
-                    return content;
-                }
+            boolean isFolder = GoogleDriveUtil.isFolder(drive, ID);
+            if (!ID.equals("") && !isFolder) {
+                return null;
             }
 
             if (ID.equals("")) {
-                FileList result = drive.files().list()
-                        .setFields("nextPageToken, files(id, name, mimeType)")
-                        .execute();
-                List<File> files = result.getFiles();
-                if (files != null && !files.isEmpty()) {
-                    System.out.println("Files:");
-                    for (File root_file : files) {
-                        if ("ENC_ROOT".equals(root_file.getName())){
-                            ID = root_file.getId();
-                            break;
-                        }
-                    }
-                }
+                ID = GoogleDriveUtil.getFileID(drive, ROOT, "root");
             }
 
             FileList result = drive.files().list()
@@ -157,16 +132,11 @@ public class GoogleDrive {
         return content;
     }
 
-    public static InputStream getInputStream (String ID, String key) throws FileNotFoundException {
-        try {// Build a new authorized API client service.
-            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
+    public InputStream getInputStream (String ID, String key) throws FileNotFoundException {
+        try {
             InputStream driveInputStream = drive.files().get(ID).executeMediaAsInputStream();
 
             return Crypto.getNewInputStream(driveInputStream, key);
-            //drive.files().get("1ZJhk3XS-nCw4hF9oV3Z0twxlhBe3G32Z").executeMediaAndDownloadTo(outputStream);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -174,104 +144,43 @@ public class GoogleDrive {
         return null;
     }
 
-    public static void executeCopy (String directory, String key) {
+    public void executeCopy (String directory, String key) {
         java.io.File file = new java.io.File(directory);
         String root_id = "";
 
         try {
-            // Build a new authorized API client service.
-            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
-
-            FileList result = drive.files().list()
-                    .setFields("nextPageToken, files(id, name, mimeType)")
-                    .execute();
-            List<File> files = result.getFiles();
-            if (files != null && !files.isEmpty()) {
-                System.out.println("Files:");
-                for (File root_file : files) {
-                    System.out.printf("%s (%s) - %s\n", root_file.getName(), root_file.getId(), root_file.getMimeType());
-                    if ("ENC_ROOT".equals(root_file.getName())){
-                        root_id = root_file.getId();
-                        break;
-                    }
-                }
+            if (!GoogleDriveUtil
+                .doesFileExist(drive, ROOT, "root"))
+            {
+                root_id =
+                        GoogleDriveUtil
+                        .createFolder(drive, ROOT, "root");
             }
 
-            if (root_id.equals("")) {
-                System.out.println("ENC_ROOT NOT FOUND");
-                System.out.println("CREATING ENC_ROOT");
-
-                File new_folder = new File();
-                new_folder.setName("ENC_ROOT");
-                new_folder.setMimeType("application/vnd.google-apps.folder");
-
-                File folder = drive.files().create(new_folder)
-                        .setFields("id")
-                        .execute();
-                root_id = folder.getId();
-            }
-
-            lock = true;
+            LOCK = true;
 
             copyFolder(file, root_id, key);
 
-            lock = false;
+            LOCK = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void copyFolder (java.io.File dir, String folder_id, String key) {
+    private void copyFolder (java.io.File dir, String folder_id, String key) {
         java.io.File[] files = dir.listFiles();
 
         if (files != null)
         for (java.io.File file : files) {
-            String path = folder_id + "/" + file.getName();
             if (file.isDirectory()) {
-                File new_folder = new File();
-                new_folder.setParents(Collections.singletonList(folder_id));
-                new_folder.setName(file.getName());
-                new_folder.setMimeType("application/vnd.google-apps.folder");
-
-                try {
-                    File folder = drive.files().create(new_folder)
-                            .setFields("id")
-                            .execute();
-                    copyFolder(file, folder.getId(), key);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                String newFolder_id =
+                        GoogleDriveUtil
+                        .createFolder(drive, file.getName(), folder_id);
+                copyFolder(file, newFolder_id, key);
             } else {
-                EncryptedFileContent encFile = new EncryptedFileContent(null, file, key);
-                File encFileMeta = new File();
-                encFileMeta.setParents(Collections.singletonList(folder_id));
-                encFileMeta.setName(file.getName());
-
-                try {
-                    drive.files().create(encFileMeta, encFile).execute();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                GoogleDriveUtil
+                .createEncryptedFile(drive, file,  folder_id, key);
             }
         }
-    }
-
-    public static InputStream download () {
-        try {// Build a new authorized API client service.
-            final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                    .setApplicationName(APPLICATION_NAME)
-                    .build();
-
-            return drive.files().get("1q-FgkfM-_EOHECXPVv8HUhLfAB0z9RG3").executeMediaAsInputStream();
-            //drive.files().get("1ZJhk3XS-nCw4hF9oV3Z0twxlhBe3G32Z").executeMediaAndDownloadTo(outputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 }

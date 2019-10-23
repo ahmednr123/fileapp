@@ -2,6 +2,7 @@ package com.fileapp.servlet;
 
 import com.fileapp.storage.GoogleDrive;
 import com.fileapp.storage.LocalDrive;
+import com.fileapp.storage.StorageStrategy;
 import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
 
@@ -35,8 +36,9 @@ public class Download extends HttpServlet {
         servletCheck.mustBeFile(file);*/
 
         if ( servletCheck.doesPass() ) {
+            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 
-            InputStream inStream = GoogleDrive.getInputStream(path, key);//Crypto.getDecryptedInputStream(file, key);
+            InputStream inStream = storageStrategy.getInputStream(path, key);
             ServletContext context = getServletContext();
 
             String mimeType = context.getMimeType(root + path);

@@ -12,6 +12,7 @@ public class EncryptedFileContent extends AbstractInputStreamContent {
     private final File file;
     private final String key;
 
+    public
     EncryptedFileContent(String type, File file, String key) {
         super(type);
         this.file = (File) Preconditions.checkNotNull(file);

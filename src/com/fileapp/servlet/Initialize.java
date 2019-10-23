@@ -2,6 +2,7 @@ package com.fileapp.servlet;
 
 import com.fileapp.storage.GoogleDrive;
 import com.fileapp.storage.LocalDrive;
+import com.fileapp.storage.StorageStrategy;
 import com.fileapp.utils.JSONReply;
 import com.fileapp.utils.ServletCheck;
 import com.fileapp.utils.Crypto;
@@ -45,12 +46,13 @@ public class Initialize extends HttpServlet {
         servletCheck.mustBeDirectory(new File(path));
 
         if ( servletCheck.doesPass() ) {
+            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
             request.getSession().setAttribute("key", key);
 
             ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");
             String root_path = (String) getServletContext().getAttribute("root_path");
             executor.execute(new Thread (() -> {
-                GoogleDrive.executeCopy(path, key);
+                storageStrategy.executeCopy(path, key);
             }));
 
             PrintWriter out = response.getWriter();

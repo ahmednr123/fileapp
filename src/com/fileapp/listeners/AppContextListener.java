@@ -1,6 +1,8 @@
 package com.fileapp.listeners;
 
 import com.fileapp.storage.GoogleDrive;
+import com.fileapp.storage.LocalDrive;
+import com.fileapp.storage.StorageStrategy;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -17,23 +19,10 @@ public class AppContextListener implements ServletContextListener {
     public void
     contextInitialized(ServletContextEvent servletContextEvent)
     {
-        //GoogleDrive.executeCopy( "C:\\Users\\Administrator\\Pictures","ahmed");
-
-        String root_path = "enc_root";
-        if (!(new File(root_path)).exists()) {
-            System.out.println();
-            System.out.println();
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("=====>                   ROOT DIRECTORY NOT FOUND                         <=====");
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println("=====> PLEASE CREATE FOLDER: "              + root_path +               " <=====");
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            System.out.println();
-            System.out.println();
-        }
-
         ServletContext ctx = servletContextEvent.getServletContext();
-        ctx.setAttribute("root_path", root_path);
+
+        StorageStrategy storageStrategy = new LocalDrive();
+        ctx.setAttribute("StorageStrategy", storageStrategy);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         ctx.setAttribute("executor", executor);

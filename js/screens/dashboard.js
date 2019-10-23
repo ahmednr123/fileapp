@@ -39,7 +39,7 @@ const DashboardScreen = {
 			let json = JSON.parse(res);
 			if (json.reply != false) {
 				console.log("_global.path set to " + dir_path)
-				_global.path = dir_path;  
+				_global.path = dir_path;
 			}
 			load_request(res)
 		})

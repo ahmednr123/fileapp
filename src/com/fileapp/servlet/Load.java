@@ -2,6 +2,7 @@ package com.fileapp.servlet;
 
 import com.fileapp.storage.GoogleDrive;
 import com.fileapp.storage.LocalDrive;
+import com.fileapp.storage.StorageStrategy;
 import com.fileapp.utils.ServletCheck;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,24 +36,9 @@ public class Load extends HttpServlet {
         servletCheck.getKey(request.getSession(false));
         servletCheck.isApplicationLoaded(getServletContext());
 
-        /*File dir = new File (root + path);
-        servletCheck.mustBeDirectory(dir);*/
-
         if (servletCheck.doesPass()) {
-            JSONArray content = GoogleDrive.getFileList(path);
-
-                    /*new JSONArray();
-            File[] files = dir.listFiles();
-
-            if (files != null) {
-                for (File file : files) {
-                    JSONObject json = new JSONObject();
-                    json.put("name", file.getName());
-                    json.put("isDirectory", file.isDirectory());
-
-                    content.put(json);
-                }
-            }*/
+            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+            JSONArray content = storageStrategy.getFileList(path);
 
             PrintWriter out = response.getWriter();
             out.print(content.toString());

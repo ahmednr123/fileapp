@@ -2,6 +2,7 @@ package com.fileapp.utils;
 
 import com.fileapp.storage.GoogleDrive;
 import com.fileapp.storage.LocalDrive;
+import com.fileapp.storage.StorageStrategy;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -76,16 +77,12 @@ public class ServletCheck {
      * @return
      */
     public void isApplicationLoaded (ServletContext ctx) {
-        if (!GoogleDrive.isLoaded()) {
+        StorageStrategy storageStrategy = (StorageStrategy) ctx.getAttribute("StorageStrategy");
+        if (!storageStrategy.isLoaded()) {
             System.out.println("APPLICATION IS NOT LOADED");
             writeOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
             passed = false;
         }
-        /*String root = (String) ctx.getAttribute("root_path");
-        if ((new File(root + "/.lock")).exists()) {
-            writeOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
-            passed = false;
-        }*/
     }
 
     /**
@@ -116,23 +113,12 @@ public class ServletCheck {
      * @return
      */
     public void isApplicationInitialized (ServletContext ctx) {
+        StorageStrategy storageStrategy = (StorageStrategy) ctx.getAttribute("StorageStrategy");
         System.out.println("APPLICATION IS NOT INITIALIZED");
-        if (!GoogleDrive.isInitialized()) {
+        if (!storageStrategy.isInitialized()) {
             writeOut (JSONReply.error(ResponseError.NOT_INITIALIZED.name()));
             passed = false;
         }
-        /*try {
-            String root = (String) ctx.getAttribute("root_path");
-            File root_dir = new File(root);
-            File[] files = root_dir.listFiles();
-
-            if (files == null || files.length == 0) {
-                writeOut (JSONReply.error(ResponseError.NOT_INITIALIZED.name()));
-                passed = false;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     /**
