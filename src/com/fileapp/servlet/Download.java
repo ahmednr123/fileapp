@@ -40,11 +40,14 @@ public class Download extends HttpServlet {
         String filename = request.getParameter("filename");
         LOGGER.info("\nPath = " + path + "\nFilename = " + filename);
 
-        servletChecker.areParametersValid(path, filename);
+        servletChecker
+                .areParametersValid(path, filename);
+
         String key = servletChecker.getKey(request.getSession(false));
 
         if ( servletChecker.doesPass() ) {
-            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+            StorageStrategy storageStrategy =
+                    (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 
             InputStream inStream = storageStrategy.getInputStream(path, key);
 

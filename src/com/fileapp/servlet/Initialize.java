@@ -41,11 +41,15 @@ public class Initialize extends HttpServlet {
         String key = request.getParameter("key");
         LOGGER.info("\nPath = " + path);
 
-        servletChecker.areParametersValid(path, key);
-        servletChecker.mustBeDirectory(new File(path));
+        servletChecker
+                .areParametersValid(path, key);
+        servletChecker
+                .mustBeDirectory(new File(path));
 
         if ( servletChecker.doesPass() ) {
-            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+            StorageStrategy storageStrategy =
+                    (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+
             request.getSession().setAttribute("key", key);
 
             ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");

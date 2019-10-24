@@ -31,11 +31,14 @@ public class GoogleDrive implements StorageStrategy {
     public
     GoogleDrive() {
         try {
+            // Connect to Google Drive
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
             drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, GoogleDriveUtil.getCredentials(HTTP_TRANSPORT))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
 
+            // Check if .lock exists which would mean the previous copy execution wasn't
+            // completed. The application is factoryReset to overcome the problem
             String ROOT_ID = GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
             if (GoogleDriveUtil.doesFileExist(drive, ".lock", ROOT_ID)) {
                 LOGGER.info("Previous executeCopy failed");
@@ -74,11 +77,13 @@ public class GoogleDrive implements StorageStrategy {
         ArrayList<FileInfo> fileInfoList = new ArrayList<>();
 
         try {
+            // Confirm if the file ID is folder
             boolean isFolder = GoogleDriveUtil.isFolder(drive, ID);
             if (!ID.equals("") && !isFolder) {
                 return null;
             }
 
+            // If empty string is passed get files from ROOT_PATH
             if (ID.equals("")) {
                 ID = GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
             }
@@ -112,7 +117,7 @@ public class GoogleDrive implements StorageStrategy {
     }
 
     @Override
-    public InputStream getInputStream (String ID, String key) throws FileNotFoundException {
+    public InputStream getInputStream (String ID, String key) {
         InputStream driveInputStream =
                 GoogleDriveUtil.getInputStream(drive, ID);
         LOGGER.info("Getting InputStream");
@@ -131,6 +136,7 @@ public class GoogleDrive implements StorageStrategy {
             if (!GoogleDriveUtil
                 .doesFileExist(drive, ROOT_PATH, "root"))
             {
+                // Create ROOT_PATH if it doesn't exist
                 LOGGER.info("ROOT_DIR NOT FOUND");
                 LOGGER.info("Creating ROOT_DIR");
                 ROOT_ID =
@@ -141,6 +147,8 @@ public class GoogleDrive implements StorageStrategy {
                         GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
             }
 
+            // .lock is created as a folder because it's easier
+            // to create an empty folder than a file
             LOGGER.info("Applying LOCK");
             GoogleDriveUtil.createFolder(drive, ".lock", ROOT_ID);
 

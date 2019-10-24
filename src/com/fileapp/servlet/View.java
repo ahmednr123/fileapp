@@ -39,11 +39,15 @@ public class View extends HttpServlet {
         String path = request.getParameter("path");
         LOGGER.info("\nPath = " + path);
 
-        servletChecker.areParametersValid(path);
-        String key = servletChecker.getKey(request.getSession(false));
+        servletChecker
+                .areParametersValid(path);
+        String key =
+                servletChecker
+                .getKey(request.getSession(false));
 
         if ( servletChecker.doesPass() ) {
-            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+            StorageStrategy storageStrategy =
+                    (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 
             InputStream inStream = storageStrategy.getInputStream(path, key);
 

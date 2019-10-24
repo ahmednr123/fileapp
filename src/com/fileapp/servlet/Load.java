@@ -46,12 +46,16 @@ public class Load extends HttpServlet {
             LOGGER.info("\nPath = " + path);
         }
 
-        servletChecker.checkIfApplicationInitialized(getServletContext());
-        servletChecker.getKey(request.getSession(false));
-        servletChecker.checkIfApplicationLoaded(getServletContext());
+        servletChecker
+                .checkIfApplicationInitialized(getServletContext());
+        servletChecker
+                .getKey(request.getSession(false));
+        servletChecker
+                .checkIfApplicationLoaded(getServletContext());
 
         if (servletChecker.doesPass()) {
-            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+            StorageStrategy storageStrategy =
+                    (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
             ArrayList<FileInfo> fileInfoList = storageStrategy.getFileList(path);
 
             LOGGER.info("Sending FileInfoList to client");

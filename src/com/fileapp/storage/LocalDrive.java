@@ -16,6 +16,8 @@ public class LocalDrive implements StorageStrategy {
 
     public
     LocalDrive () {
+        // Check if .lock exists which would mean the previous copy execution wasn't
+        // completed. The application is factoryReset to overcome the problem
         if ((new File(ROOT_PATH + "/.lock").exists())) {
             LOGGER.info("Previous executeCopy failed");
             factoryReset();
@@ -80,6 +82,7 @@ public class LocalDrive implements StorageStrategy {
         LOGGER.info("Executing copy of files in directory: " + directory);
         File root_file = new File(ROOT_PATH);
         if (!root_file.exists()) {
+            // Create ROOT_PATH if it doesn't exist
             LOGGER.info("ROOT_DIR NOT FOUND");
             LOGGER.info("Creating ROOT_DIR");
             root_file.mkdir();

@@ -20,6 +20,12 @@ import java.util.logging.Logger;
 public class FactoryReset extends HttpServlet {
     private static Logger LOGGER = Logger.getLogger(FactoryReset.class.getName());
 
+    /**
+     * Get [key] from session
+     *
+     * Response:
+     *      ServletChecker Error || NOT_INITIALIZED
+     */
     @Override
     protected void
     doPost (HttpServletRequest request, HttpServletResponse response)
@@ -31,7 +37,8 @@ public class FactoryReset extends HttpServlet {
         servletChecker.getKey(request.getSession());
 
         if (servletChecker.doesPass()) {
-            StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+            StorageStrategy storageStrategy =
+                    (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 
             storageStrategy.factoryReset();
             request.getSession().removeAttribute("key");

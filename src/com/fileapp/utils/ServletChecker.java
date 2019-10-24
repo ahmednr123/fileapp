@@ -87,7 +87,9 @@ public class ServletChecker {
      */
     public void checkIfApplicationLoaded (ServletContext ctx) {
         LOGGER.info("Checking if application has loaded");
-        StorageStrategy storageStrategy = (StorageStrategy) ctx.getAttribute("StorageStrategy");
+        StorageStrategy storageStrategy =
+                (StorageStrategy) ctx.getAttribute("StorageStrategy");
+
         if (!storageStrategy.isLoaded()) {
             writeErrorOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
             passed = false;
@@ -128,7 +130,9 @@ public class ServletChecker {
      */
     public void checkIfApplicationInitialized (ServletContext ctx) {
         LOGGER.info("Checking if application has been initialized");
-        StorageStrategy storageStrategy = (StorageStrategy) ctx.getAttribute("StorageStrategy");
+        StorageStrategy storageStrategy =
+                (StorageStrategy) ctx.getAttribute("StorageStrategy");
+
         if (!storageStrategy.isInitialized()) {
             writeErrorOut (JSONReply.error(ResponseError.NOT_INITIALIZED.name()));
             passed = false;

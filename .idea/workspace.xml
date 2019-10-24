@@ -2,15 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6848942b-c230-4ed2-ba0a-352a790ba663" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/FactoryReset.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/googledrive/GoogleDriveUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/googledrive/GoogleDriveUtil.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/storage/GoogleDrive.class" beforeDir="false" afterPath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/storage/GoogleDrive.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/js/screens/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/screens/dashboard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/fileapp/googledrive/GoogleDriveUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/googledrive/GoogleDriveUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/Download.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/Download.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/FactoryReset.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/FactoryReset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/Initialize.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/Initialize.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/Load.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/Load.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/servlet/View.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/servlet/View.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/fileapp/storage/GoogleDrive.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/storage/GoogleDrive.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/storage/LocalDrive.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/storage/LocalDrive.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/utils/ServletChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/utils/ServletChecker.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
