@@ -9,73 +9,23 @@ import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 public class Crypto {
+    private static Logger LOGGER = Logger.getLogger(Crypto.class.getName());
 
-    /**
-     * Encrypt a file and copy it to the new destination
-     *
-     * @param key
-     * @param inputFile
-     * @param outputFile
-     */
-    public static void encrypt (String key, File inputFile, File outputFile) {
+    public static InputStream getDecryptedInputStream (InputStream is, String key) {
         key = applyPadding(key);
         try {
-            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-            FileInputStream inputStream = new FileInputStream(inputFile);
-
-            FileOutputStream outputStream = new FileOutputStream(outputFile);
-            CipherOutputStream cos = new CipherOutputStream(outputStream, cipher);
-            byte[] buf = new byte[8192];
-            int read;
-            while((read=inputStream.read(buf))!=-1){
-                cos.write(buf,0,read);
-            }
-
-            inputStream.close();
-            outputStream.flush();
-            cos.close();
-        } catch (Exception e) {
-            System.out.println("Not allowed to access: " + inputFile.getAbsolutePath());
-        }
-    }
-
-    /**
-     * Get decrypted InputStream of a file
-     *
-     * @param file
-     * @param key
-     * @return
-     */
-    public static InputStream getDecryptedInputStream (File file, String key) {
-        key = applyPadding(key);
-        try {
+            LOGGER.info("Decrypting InputStream");
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-            return (new CipherInputStream(new FileInputStream(file), cipher));
-        } catch (FileNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static InputStream getNewInputStream (InputStream is, String key) {
-        key = applyPadding(key);
-        try {
-            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
-
+            LOGGER.info("Sending Decrypted InputStream");
             return (new CipherInputStream(is, cipher));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-            e.printStackTrace();
+            LOGGER.severe(e.getMessage());
         }
 
         return null;
@@ -84,13 +34,15 @@ public class Crypto {
     public static InputStream getEncryptedInputStream (File file, String key) {
         key = applyPadding(key);
         try {
+            LOGGER.info("Encrypting InputStream");
             Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
+            LOGGER.info("Sending Encrypted InputStream");
             return (new CipherInputStream(new FileInputStream(file), cipher));
         } catch (FileNotFoundException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-            e.printStackTrace();
+            LOGGER.severe(e.getMessage());
         }
 
         return null;

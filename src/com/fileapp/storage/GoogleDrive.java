@@ -2,98 +2,76 @@ package com.fileapp.storage;
 
 import com.fileapp.utils.Crypto;
 import com.fileapp.googledrive.GoogleDriveUtil;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
+/**
+ * StorageStrategy to use GoogleDrive to store encrypted files
+ */
 public class GoogleDrive implements StorageStrategy {
-    private static final String ROOT = "ENC_ROOT";
+    private static Logger LOGGER = Logger.getLogger(GoogleDrive.class.getName());
 
-    private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
+    private static final String ROOT_PATH = "ENC_ROOT";
+
+    private static final String APPLICATION_NAME = "FileApp";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
     private static Drive drive = null;
-    private static boolean LOCK = false;
-
-    /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
-     */
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-    private static final String CREDENTIALS_FILE_PATH = "C:\\Users\\inc-611\\Documents\\Learning\\credentials.json";
-
-    /**
-     * Creates an authorized Credential object.
-     * @param HTTP_TRANSPORT The network HTTP Transport.
-     * @return An authorized Credential object.
-     * @throws IOException If the credentials.json file cannot be found.
-     */
-    private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        // Load client secrets.
-        InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
-
-        // Build flow and trigger user authorization request.
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-                .setAccessType("offline")
-                .build();
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-        return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-    }
 
     public
     GoogleDrive() {
         try {
             final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+            drive = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, GoogleDriveUtil.getCredentials(HTTP_TRANSPORT))
                     .setApplicationName(APPLICATION_NAME)
                     .build();
+
+            String ROOT_ID = GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
+            if (GoogleDriveUtil.doesFileExist(drive, ".lock", ROOT_ID)) {
+                LOGGER.info("Previous executeCopy failed");
+                factoryReset();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.severe(e.getMessage());
         }
     }
 
-
+    @Override
     public boolean isLoaded () {
-        return !LOCK;
+        String ROOT_ID = GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
+        boolean isLoaded = !GoogleDriveUtil.doesFileExist(drive, ".lock", ROOT_ID);
+        LOGGER.info("isLoaded? = " + isLoaded);
+
+        return isLoaded;
     }
 
+    @Override
     public boolean isInitialized () {
+        boolean isInitialized = false;
         try {
-            return GoogleDriveUtil.doesFileExist(drive, ROOT, "root");
+            isInitialized = GoogleDriveUtil.doesFileExist(drive, ROOT_PATH, "root");
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            LOGGER.severe(e.getMessage());
         }
+
+        LOGGER.info("isInitialized? = " + isInitialized);
+
+        return isInitialized;
     }
 
+    @Override
     public ArrayList<FileInfo> getFileList (String ID) {
         ArrayList<FileInfo> fileInfoList = new ArrayList<>();
-        System.out.println("getFileList() : String ID = " + ID);
-        System.out.println("getFileList() : ID == \"\" " + ID.equals(""));
-        System.out.println("getFileList() : ID == null " + (ID == null));
 
         try {
             boolean isFolder = GoogleDriveUtil.isFolder(drive, ID);
@@ -102,21 +80,20 @@ public class GoogleDrive implements StorageStrategy {
             }
 
             if (ID.equals("")) {
-                ID = GoogleDriveUtil.getFileID(drive, ROOT, "root");
+                ID = GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
             }
 
-            FileList result = drive.files().list()
-                    .setQ("parents in '"+ ID +"'")
-                    .setFields("nextPageToken, files(id, name, mimeType)")
-                    .execute();
+            LOGGER.info("Getting fileInfoList");
 
-            List<File> files = result.getFiles();
+            List<File> files = GoogleDriveUtil.getFiles(drive, ID);
             if (files == null || files.isEmpty()) {
                 System.out.println("No files found.");
             } else {
                 System.out.println("Files:");
                 for (File sub_file : files) {
-                    System.out.printf("%s (%s) - %s\n", sub_file.getName(), sub_file.getId(), sub_file.getMimeType());
+                    System.out.printf("%s - %s - %s\n",
+                            sub_file.getName(), sub_file.getId(),
+                            sub_file.getMimeType().equals("application/vnd.google-apps.folder"));
 
                     fileInfoList.add(
                             new FileInfo(
@@ -128,48 +105,57 @@ public class GoogleDrive implements StorageStrategy {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.severe(e.getMessage());
         }
 
         return fileInfoList;
     }
 
+    @Override
     public InputStream getInputStream (String ID, String key) throws FileNotFoundException {
-        try {
-            InputStream driveInputStream = drive.files().get(ID).executeMediaAsInputStream();
+        InputStream driveInputStream =
+                GoogleDriveUtil.getInputStream(drive, ID);
+        LOGGER.info("Getting InputStream");
 
-            return Crypto.getNewInputStream(driveInputStream, key);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return Crypto.getDecryptedInputStream(driveInputStream, key);
     }
 
+    @Override
     public void executeCopy (String directory, String key) {
+        LOGGER.info("Executing copy of files in directory: " + directory);
+        
         java.io.File file = new java.io.File(directory);
-        String root_id = "";
+        String ROOT_ID = "";
 
         try {
             if (!GoogleDriveUtil
-                .doesFileExist(drive, ROOT, "root"))
+                .doesFileExist(drive, ROOT_PATH, "root"))
             {
-                root_id =
+                LOGGER.info("ROOT_DIR NOT FOUND");
+                LOGGER.info("Creating ROOT_DIR");
+                ROOT_ID =
                         GoogleDriveUtil
-                        .createFolder(drive, ROOT, "root");
+                        .createFolder(drive, ROOT_PATH, "root");
+            } else {
+                ROOT_ID =
+                        GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
             }
 
-            LOCK = true;
+            LOGGER.info("Creating .lock file");
+            GoogleDriveUtil.createFile(drive, new java.io.File(".lock"), ROOT_ID);
 
-            copyFolder(file, root_id, key);
+            copyFolder(file, ROOT_ID, key);
 
-            LOCK = false;
+            String lockFileId = GoogleDriveUtil.getFileID(drive, ".lock", ROOT_ID);
+            GoogleDriveUtil.deleteFile(drive, lockFileId);
+            LOGGER.info("Directory copied successfully");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.severe(e.getMessage());
         }
     }
 
     private void copyFolder (java.io.File dir, String folder_id, String key) {
+        LOGGER.info("Copying Folder: " + dir.getName());
         java.io.File[] files = dir.listFiles();
 
         if (files != null)
@@ -180,9 +166,17 @@ public class GoogleDrive implements StorageStrategy {
                         .createFolder(drive, file.getName(), folder_id);
                 copyFolder(file, newFolder_id, key);
             } else {
+                LOGGER.info("Encrypting file: " + file.getAbsolutePath());
                 GoogleDriveUtil
                 .createEncryptedFile(drive, file,  folder_id, key);
             }
         }
+    }
+
+    @Override
+    public void factoryReset() {
+        LOGGER.info("Executing Factory Reset");
+        String ROOT_ID = GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
+        GoogleDriveUtil.deleteFile(drive, ROOT_ID);
     }
 }

@@ -1,10 +1,7 @@
 package com.fileapp.servlet;
 
-import com.fileapp.storage.GoogleDrive;
-import com.fileapp.storage.LocalDrive;
 import com.fileapp.storage.StorageStrategy;
-import com.fileapp.utils.ServletCheck;
-import com.fileapp.utils.Crypto;
+import com.fileapp.utils.ServletChecker;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,44 +10,51 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLDecoder;
+import java.util.logging.Logger;
 
+/**
+ * Get image data of the file path
+ */
 @WebServlet(urlPatterns = "/view")
 public class View extends HttpServlet {
+    private static Logger LOGGER = Logger.getLogger(View.class.getName());
+
+    /**
+     * Request Parameters:
+     *      [path] Path/ID of the file
+     *
+     * Get [key] from session
+     *
+     * Response:
+     *      ServletChecker Error || "application/octet-stream" of the image file
+     */
     @Override
     protected void
     doGet (HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
+            throws IOException
     {
-        ServletCheck servletCheck = new ServletCheck(response);
+        LOGGER.info("GET /view [HIT]");
+        ServletChecker servletChecker = new ServletChecker(response);
 
         String path = request.getParameter("path");
-        String root = (String) getServletContext().getAttribute("root_path");
+        LOGGER.info("\nPath = " + path);
 
-        System.out.println("GET /view path=" + path);
+        servletChecker.areParametersValid(path);
+        String key = servletChecker.getKey(request.getSession(false));
 
-        servletCheck.areParametersValid(path);
-        String key = servletCheck.getKey(request.getSession(false));
-
-        if ( servletCheck.doesPass() ) {
+        if ( servletChecker.doesPass() ) {
             StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 
             InputStream inStream = storageStrategy.getInputStream(path, key);
-            ServletContext context = getServletContext();
 
-            String mimeType = context.getMimeType(root + path);
-            if (mimeType == null) {
-                mimeType = "application/octet-stream";
-            }
-            System.out.println("MIME type: " + mimeType);
-
-            response.setContentType(mimeType);
+            response.setContentType("application/octet-stream");
 
             OutputStream outStream = response.getOutputStream();
 
             byte[] buffer = new byte[8192];
             int bytesRead = -1;
 
+            LOGGER.info("Sending file content to client");
             while ((bytesRead = inStream.read(buffer)) != -1) {
                 outStream.write(buffer, 0, bytesRead);
 

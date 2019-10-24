@@ -2,6 +2,11 @@ package com.fileapp.storage;
 
 import java.util.ArrayList;
 
+/**
+ * Stores Information of the file.
+ * This is to force the similar information format
+ * within all Storage Strategies
+ */
 public class FileInfo {
 
     private String name;

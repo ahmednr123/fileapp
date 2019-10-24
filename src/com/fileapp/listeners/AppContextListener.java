@@ -10,23 +10,35 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 @WebListener
 public class AppContextListener implements ServletContextListener {
+    private static Logger LOGGER = Logger.getLogger(AppContextListener.class.getName());
 
+    /**
+     * Initializing StorageStrategy and ExecutorServer
+     * to be used within the ServletContext
+     */
     @Override
     public void
     contextInitialized(ServletContextEvent servletContextEvent)
     {
         ServletContext ctx = servletContextEvent.getServletContext();
+        LOGGER.info("ServletContext Initialized");
 
         StorageStrategy storageStrategy = new GoogleDrive();
         ctx.setAttribute("StorageStrategy", storageStrategy);
+        LOGGER.info("Initialized StorageStrategy and added to ServletContext");
 
-        ExecutorService executor = Executors.newFixedThreadPool(2);
+        ExecutorService executor = Executors.newFixedThreadPool(4);
         ctx.setAttribute("executor", executor);
+        LOGGER.info("Initialized ExecutorService and added to ServletContext");
     }
 
+    /**
+     * Shutdown ExecutorService
+     */
     @Override
     public void
     contextDestroyed(ServletContextEvent servletContextEvent)
@@ -36,6 +48,9 @@ public class AppContextListener implements ServletContextListener {
                         servletContextEvent.getServletContext().getAttribute("executor");
 
         executor.shutdown();
+        LOGGER.info("ExecutorService has been shutdown");
+
+        LOGGER.info("ServletContext Destroyed");
     }
 
 }

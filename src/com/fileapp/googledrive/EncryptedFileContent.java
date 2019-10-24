@@ -8,6 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Clone of FileContent with encryption
+ */
 public class EncryptedFileContent extends AbstractInputStreamContent {
     private final File file;
     private final String key;
