@@ -1,20 +1,17 @@
 package com.fileapp.servlet;
 
-import com.fileapp.storage.GoogleDrive;
-import com.fileapp.storage.LocalDrive;
+import com.fileapp.storage.FileInfo;
 import com.fileapp.storage.StorageStrategy;
 import com.fileapp.utils.ServletCheck;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 @WebServlet(urlPatterns = "/load")
 public class Load extends HttpServlet {
@@ -38,10 +35,10 @@ public class Load extends HttpServlet {
 
         if (servletCheck.doesPass()) {
             StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
-            JSONArray content = storageStrategy.getFileList(path);
+            ArrayList<FileInfo> fileInfoList = storageStrategy.getFileList(path);
 
             PrintWriter out = response.getWriter();
-            out.print(content.toString());
+            out.print(FileInfo.arrayListToString(fileInfoList));
             out.close();
         }
     }

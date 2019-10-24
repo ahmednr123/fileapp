@@ -25,15 +25,15 @@ public class Download extends HttpServlet {
         ServletCheck servletCheck = new ServletCheck(response);
 
         String path = request.getParameter("path");
+        String filename = request.getParameter("filename");
         String root = (String) getServletContext().getAttribute("root_path");
 
         System.out.println("GET /download path=" + path);
 
-        servletCheck.areParametersValid(path);
+        servletCheck.areParametersValid(path, filename);
         String key = servletCheck.getKey(request.getSession(false));
 
-        /*File file = new File (root + path);
-        servletCheck.mustBeFile(file);*/
+        System.out.println("FILENAME: " + filename);
 
         if ( servletCheck.doesPass() ) {
             StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
@@ -50,7 +50,7 @@ public class Download extends HttpServlet {
             response.setContentType(mimeType);
 
             String headerKey = "Content-Disposition";
-            String headerValue = String.format("attachment; filename=\"%s\"", path);
+            String headerValue = String.format("attachment; filename=\"%s\"", filename);
             response.setHeader(headerKey, headerValue);
 
             OutputStream outStream = response.getOutputStream();

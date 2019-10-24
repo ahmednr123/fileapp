@@ -71,7 +71,6 @@ public class GoogleDriveUtil {
                     .execute();
             List<File> files = result.getFiles();
             if (files != null && !files.isEmpty()) {
-                System.out.println("Files:");
                 for (File file : files) {
                     if (filename.equals(file.getName())){
                         return file.getId();
@@ -86,13 +85,16 @@ public class GoogleDriveUtil {
     }
 
     public static boolean isFolder (Drive drive, String folder_id) {
+        System.out.println("isFolder() : Folder ID: " + folder_id);
+        if (folder_id.equals(""))
+            return false;
         try {
             File file = drive.files().get(folder_id).execute();
             if (file.getMimeType().equals("application/vnd.google-apps.folder")) {
                 return true;
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return false;
     }

@@ -8,7 +8,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +20,7 @@ public class AppContextListener implements ServletContextListener {
     {
         ServletContext ctx = servletContextEvent.getServletContext();
 
-        StorageStrategy storageStrategy = new LocalDrive();
+        StorageStrategy storageStrategy = new GoogleDrive();
         ctx.setAttribute("StorageStrategy", storageStrategy);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);

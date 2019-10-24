@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class LocalDrive implements StorageStrategy {
     private static String root = "enc_root";
@@ -35,10 +36,10 @@ public class LocalDrive implements StorageStrategy {
         return files != null && files.length != 0;
     }
 
-    public JSONArray getFileList (String path) {
+    public ArrayList<FileInfo> getFileList (String path) {
         File dir = new File (root + path);
 
-        JSONArray content = new JSONArray();
+        ArrayList<FileInfo> fileInfoList = new ArrayList<>();
         File[] files = dir.listFiles();
 
         if (files != null)
@@ -48,10 +49,16 @@ public class LocalDrive implements StorageStrategy {
             json.put("path", path + "/" + file.getName());
             json.put("isDirectory", file.isDirectory());
 
-            content.put(json);
+            fileInfoList.add(
+                    new FileInfo(
+                            file.getName(),
+                            path + "/" + file.getName(),
+                            file.isDirectory()
+                    )
+            );
         }
 
-        return content;
+        return fileInfoList;
     }
 
     public InputStream getInputStream (String path, String key) throws FileNotFoundException {

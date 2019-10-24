@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,8 +89,11 @@ public class GoogleDrive implements StorageStrategy {
         }
     }
 
-    public JSONArray getFileList (String ID) {
-        JSONArray content = new JSONArray();
+    public ArrayList<FileInfo> getFileList (String ID) {
+        ArrayList<FileInfo> fileInfoList = new ArrayList<>();
+        System.out.println("getFileList() : String ID = " + ID);
+        System.out.println("getFileList() : ID == \"\" " + ID.equals(""));
+        System.out.println("getFileList() : ID == null " + (ID == null));
 
         try {
             boolean isFolder = GoogleDriveUtil.isFolder(drive, ID);
@@ -112,21 +116,22 @@ public class GoogleDrive implements StorageStrategy {
             } else {
                 System.out.println("Files:");
                 for (File sub_file : files) {
-                    JSONObject json = new JSONObject();
-                    json.put("name", sub_file.getName());
-                    json.put("path", sub_file.getId());
-                    json.put("isDirectory", (sub_file.getMimeType().equals("application/vnd.google-apps.folder")));
-
                     System.out.printf("%s (%s) - %s\n", sub_file.getName(), sub_file.getId(), sub_file.getMimeType());
 
-                    content.put(json);
+                    fileInfoList.add(
+                            new FileInfo(
+                                    sub_file.getName(),
+                                    sub_file.getId(),
+                                    (sub_file.getMimeType().equals("application/vnd.google-apps.folder"))
+                            )
+                    );
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return content;
+        return fileInfoList;
     }
 
     public InputStream getInputStream (String ID, String key) throws FileNotFoundException {

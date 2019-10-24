@@ -5,7 +5,7 @@ const DashboardScreen = {
 		<span id="picture-name"></span>
 		<img id="picture-frame" />
 		<div id="path-div">
-			${(_global.path=="")?"/":_global.path}
+			${(_global.display_path=="")?"/":_global.display_path}
 		</div>
 		<div id="file-list" class="vertical"></div>
 		`,
@@ -27,10 +27,13 @@ const DashboardScreen = {
 
 		console.log("name: " + dir_name);
 		if (dir_name == "..") {
-			dir_path = this.getAttribute("path").split("/")
-			dir_path.pop();
-			dir_path.pop();
-			dir_path = dir_path.join("/")
+			dir_path = _global.path_stack.pop();
+			let path_arr = _global.display_path.split("/");
+			path_arr.pop();
+			_global.display_path = path_arr.join("/");
+		} else {
+			_global.display_path += "/" + dir_name;
+			_global.path_stack.push(_global.path);
 		}
 
 		app.innerHTML = _global.loading_screen;
@@ -45,10 +48,7 @@ const DashboardScreen = {
 		})
 	},
 
-	load_img: function (filepath) {
-		let filename = filepath.split('/')
-		filename = filename[filename.length-1]
-
+	load_img: function (filepath, filename) {
 		$forEach(".close-btn", (el) => {
 			el.parentElement.removeChild(el);
 		})
@@ -95,7 +95,8 @@ const DashboardScreen = {
 		for (let file of file_list) {
 			let el = document.createElement("div");
 			el.classList.add("file");
-			el.setAttribute("path", file.path);//_global.path + "/" + file.name);
+			el.setAttribute("path", file.path);
+			el.setAttribute("file-name", file.name);
 
 			let ext = file.name.split('.');
 			ext = ext[ext.length-1];
@@ -115,17 +116,19 @@ const DashboardScreen = {
 
 		$forEach(".view-btn", function (el) {
 			let path = el.parentElement.parentElement.getAttribute("path");
+			let filename = el.parentElement.parentElement.getAttribute("file-name");
 			el.addEventListener("click", function () {
-				DashboardScreen.load_img(path)
+				DashboardScreen.load_img(path, filename)
 			})
 		})
 
 		$forEach(".download-btn", function (el) {
 			let path = el.parentElement.parentElement.getAttribute("path");
+			let filename = el.parentElement.parentElement.getAttribute("file-name");
 			el.addEventListener('click', function () {
 				console.log("Downloading: " + path);
 				window.open(
-					'/FileApp/download?path='+encodeURIComponent(path),
+					'/FileApp/download?path='+encodeURIComponent(path)+"&filename="+encodeURIComponent(filename),
 					'_blank'
 				);
 			});

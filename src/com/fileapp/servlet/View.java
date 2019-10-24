@@ -32,9 +32,6 @@ public class View extends HttpServlet {
         servletCheck.areParametersValid(path);
         String key = servletCheck.getKey(request.getSession(false));
 
-        /*File file = new File (root + path);
-        servletCheck.mustBeFile(file);*/
-
         if ( servletCheck.doesPass() ) {
             StorageStrategy storageStrategy = (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 

@@ -20,7 +20,7 @@ const InitScreen = {
 		`<div class="vertical init-form">
 			<section class="vertical">
 				<label>Key</label>
-				<input type="text" id="key">
+				<input type="password" id="key">
 			</section>
 			<section class="vertical">
 				<input type="button" value="Browse" id="set-session">
