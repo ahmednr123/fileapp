@@ -264,7 +264,7 @@ public class GoogleDriveUtil {
     public static void deleteFile (Drive drive, String file_id) {
         try {
             LOGGER.info("Deleting file: " + file_id);
-            drive.files().delete(file_id);
+            drive.files().delete(file_id).execute();
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }

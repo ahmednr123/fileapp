@@ -8,6 +8,7 @@ const DashboardScreen = {
 			${(_global.display_path=="")?"/":_global.display_path}
 		</div>
 		<div id="file-list" class="vertical"></div>
+		<span class="tiny-btn" id="reset-btn">Factory Reset</span>
 		`,
 
 		file: (filename, isDir, isImage) => `
@@ -78,6 +79,12 @@ const DashboardScreen = {
 		$("#picture-frame").src = "/FileApp/view?path="+encodeURIComponent(filepath);
 	},
 
+	factory_reset: function () {
+		if (confirm("Are you sure? All files will be deleted.")) {
+			$xhrPost("/FileApp/factory-reset", {}, load_request);
+		}
+	},
+
 	close_picture_frame: function () {
 	    $("#picture-name").style.display = "none";
 	    $("#picture-frame").style.display = "none";
@@ -133,6 +140,8 @@ const DashboardScreen = {
 				);
 			});
 		})
+
+		$("#reset-btn").addEventListener("click", this.factory_reset);
 	}
 
 }

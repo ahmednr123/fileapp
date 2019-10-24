@@ -11,6 +11,7 @@ function load_request (res) {
 			InitScreen.init(json.error);
 		} else if (json.error == Response.DIRECTORY_NOT_LOADED) {
 			app.innerHTML = _global.loading_screen;
+			_global.copy_wait.start();
 		}
 	} else {
 		_global.copy_wait.stop();
@@ -36,7 +37,7 @@ _global.copy_wait = {
 		setInterval(function () {
 			console.log("copy_interval running");
 			$xhrRequest('/FileApp/load', load_request)
-		}, 1000)
+		}, 2000)
 	},
 	stop: function () {
 		clearInterval(_global._copy_interval);

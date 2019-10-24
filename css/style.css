@@ -150,3 +150,10 @@ input[type="button"]:hover {
   padding: 7px 14px;
   font-weight: bold;
 }
+
+#reset-btn {
+  color: darkred;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}

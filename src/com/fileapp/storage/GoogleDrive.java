@@ -141,11 +141,12 @@ public class GoogleDrive implements StorageStrategy {
                         GoogleDriveUtil.getFileID(drive, ROOT_PATH, "root");
             }
 
-            LOGGER.info("Creating .lock file");
-            GoogleDriveUtil.createFile(drive, new java.io.File(".lock"), ROOT_ID);
+            LOGGER.info("Applying LOCK");
+            GoogleDriveUtil.createFolder(drive, ".lock", ROOT_ID);
 
             copyFolder(file, ROOT_ID, key);
 
+            LOGGER.info("Releasing LOCK");
             String lockFileId = GoogleDriveUtil.getFileID(drive, ".lock", ROOT_ID);
             GoogleDriveUtil.deleteFile(drive, lockFileId);
             LOGGER.info("Directory copied successfully");
