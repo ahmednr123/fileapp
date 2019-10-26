@@ -54,7 +54,7 @@ public class Initialize extends HttpServlet {
 
             ExecutorService executor = (ExecutorService) getServletContext().getAttribute("executor");
             executor.execute(new Thread (() -> {
-                storageStrategy.executeCopy(path, key);
+                storageStrategy.encrypt(path, key);
             }));
 
             PrintWriter out = response.getWriter();

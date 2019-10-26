@@ -83,6 +83,7 @@ public class Load extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         String key = request.getParameter("key");
+        System.out.println("KEY: " + key);
 
         if (key != null) {
             request.getSession().setAttribute("key", key);

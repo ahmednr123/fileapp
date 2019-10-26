@@ -1,5 +1,8 @@
 package com.fileapp.storage;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 /**
@@ -12,6 +15,21 @@ public class FileInfo {
     private String name;
     private String path;
     private boolean isDirectory;
+
+    public
+    FileInfo (String jsonString) {
+        JSONObject jsonObject = new JSONObject(jsonString);
+        this.name = jsonObject.getString("name");
+        this.path = jsonObject.getString("path");
+        this.isDirectory = jsonObject.getBoolean("isDirectory");
+    }
+
+    public
+    FileInfo (JSONObject jsonObject) {
+        this.name = jsonObject.getString("name");
+        this.path = jsonObject.getString("path");
+        this.isDirectory = jsonObject.getBoolean("isDirectory");
+    }
 
     public
     FileInfo (String name, String path, boolean isDirectory) {
@@ -42,4 +60,16 @@ public class FileInfo {
         return arrString + "]";
     }
 
+    public static
+    ArrayList<FileInfo> stringToArrayList (String listString) {
+        ArrayList<FileInfo> fileList = new ArrayList<>();
+        JSONArray array = new JSONArray(listString);
+
+        for (Object object : array) {
+            JSONObject jsonObject = (JSONObject) object;
+            fileList.add(new FileInfo(jsonObject));
+        }
+
+        return fileList;
+    }
 }

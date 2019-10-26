@@ -22,6 +22,7 @@ public class Download extends HttpServlet {
     /**
      * Request Parameters:
      *      [path] Path/ID of the file
+     *      [filename] Name of the file
      *
      * Get [key] from session
      *

@@ -1,5 +1,7 @@
 package com.fileapp.listeners;
 
+import com.fileapp.cache.FileInfoCache;
+import com.fileapp.storage.FileInfo;
 import com.fileapp.storage.GoogleDrive;
 import com.fileapp.storage.LocalDrive;
 import com.fileapp.storage.StorageStrategy;
@@ -27,13 +29,16 @@ public class AppContextListener implements ServletContextListener {
         ServletContext ctx = servletContextEvent.getServletContext();
         LOGGER.info("ServletContext Initialized");
 
-        StorageStrategy storageStrategy = new GoogleDrive();
+        StorageStrategy storageStrategy = new LocalDrive();
         ctx.setAttribute("StorageStrategy", storageStrategy);
         LOGGER.info("Initialized StorageStrategy and added to ServletContext");
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
         ctx.setAttribute("executor", executor);
         LOGGER.info("Initialized ExecutorService and added to ServletContext");
+
+        FileInfoCache.getInstance().initialize(storageStrategy.getName());
+        LOGGER.info("Initialized FileInfoCache");
     }
 
     /**
@@ -43,12 +48,14 @@ public class AppContextListener implements ServletContextListener {
     public void
     contextDestroyed(ServletContextEvent servletContextEvent)
     {
-        ExecutorService executor =
-                (ExecutorService)
-                        servletContextEvent.getServletContext().getAttribute("executor");
+        ServletContext ctx = servletContextEvent.getServletContext();
 
+        ExecutorService executor = (ExecutorService) ctx.getAttribute("executor");
         executor.shutdown();
         LOGGER.info("ExecutorService has been shutdown");
+
+        FileInfoCache.getInstance().destroy();
+        LOGGER.info("FileInfoCache has been destroyed");
 
         LOGGER.info("ServletContext Destroyed");
     }

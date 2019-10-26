@@ -1,5 +1,6 @@
 package com.fileapp.storage;
 
+import com.fileapp.cache.FileInfoCache;
 import com.fileapp.utils.Crypto;
 
 import java.io.*;
@@ -9,33 +10,26 @@ import java.util.logging.Logger;
 /**
  * StorageStrategy to use Local file system to store encrypted files
  */
-public class LocalDrive implements StorageStrategy {
+public class LocalDrive extends StorageStrategy {
     private static Logger LOGGER = Logger.getLogger(LocalDrive.class.getName());
 
     private static String ROOT_PATH = "enc_root";
 
     public
     LocalDrive () {
-        // Check if .lock exists which would mean the previous copy execution wasn't
-        // completed. The application is factoryReset to overcome the problem
-        if ((new File(ROOT_PATH + "/.lock").exists())) {
-            LOGGER.info("Previous executeCopy failed");
-            factoryReset();
-        }
+        super("LocalDrive");
     }
 
     @Override
-    public boolean isLoaded () {
-        boolean isLoaded = !(new File(ROOT_PATH + "/.lock")).exists();
-        LOGGER.info("isLoaded? = " + isLoaded);
-
-        return isLoaded;
+    boolean isCorrupt () {
+        return (new File(ROOT_PATH + "/.lock").exists());
     }
 
     @Override
-    public boolean isInitialized () {
+    boolean checkIfInitialized () {
         File root_dir = new File(ROOT_PATH);
         File[] files = root_dir.listFiles();
+
         boolean isInitialized = (files != null && files.length != 0);
         LOGGER.info("isInitialized? = " + isInitialized);
 
@@ -44,6 +38,14 @@ public class LocalDrive implements StorageStrategy {
 
     @Override
     public ArrayList<FileInfo> getFileList (String path) {
+        // Check if fileInfoList was successfully cached
+        ArrayList<FileInfo> fileList = FileInfoCache.getInstance().get(path);
+        if (fileList != null) {
+            // Send fileInfoList cache
+            LOGGER.info("Loaded fileInfoList from Cache");
+            return fileList;
+        }
+
         File dir = new File (ROOT_PATH + path);
 
         ArrayList<FileInfo> fileInfoList = new ArrayList<>();
@@ -65,6 +67,8 @@ public class LocalDrive implements StorageStrategy {
             );
         }
 
+        FileInfoCache.getInstance().set(path, fileInfoList);
+
         return fileInfoList;
     }
 
@@ -78,7 +82,7 @@ public class LocalDrive implements StorageStrategy {
     }
 
     @Override
-    public void executeCopy (String directory, String key) {
+    public void executeEncryption (String directory, String key) {
         LOGGER.info("Executing copy of files in directory: " + directory);
         File root_file = new File(ROOT_PATH);
         if (!root_file.exists()) {
@@ -98,34 +102,44 @@ public class LocalDrive implements StorageStrategy {
         }
 
         File rootDirectory = new File(directory);
-        copyFolder(rootDirectory, ROOT_PATH, key);
+        copyFolder(rootDirectory, null, ROOT_PATH, key);
 
         File lock_file = new File (ROOT_PATH + "/.lock");
         if (lock_file.delete()) {
             LOGGER.info("Directory copied successfully");
         } else {
-            LOGGER.info("Error copying directory");
+            LOGGER.severe("Error copying directory");
         }
     }
 
-    private void copyFolder (File dir, String to, String key) {
+    private void copyFolder (File dir, String path, String to, String key) {
+        if (path == null)
+            path = "";
+
         LOGGER.info("Copying Folder: " + dir.getName());
         File[] files = dir.listFiles();
+        ArrayList<FileInfo> fileList = new ArrayList<>();
 
         if (files != null)
-            for (File file : files) {
-                String path = to + "/" + file.getName();
-                if (file.isDirectory()) {
-                    (new File(path)).mkdir();
-                    copyFolder(file, path, key);
-                } else {
-                    LOGGER.info("Encrypting file: " + file.getAbsolutePath());
-                    createEncryptedFile(
-                            Crypto.getEncryptedInputStream(file, key),
-                            new File(path)
-                    );
-                }
+        for (File file : files) {
+            String full_path = to + "/" + file.getName();
+            if (file.isDirectory()) {
+                (new File(full_path)).mkdir();
+                copyFolder(file, path + "/" + file.getName(), full_path, key);
+
+                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), true));
+            } else {
+                LOGGER.info("Encrypting file: " + file.getAbsolutePath());
+                createEncryptedFile(
+                        Crypto.getEncryptedInputStream(file, key),
+                        new File(full_path)
+                );
+
+                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), false));
             }
+        }
+
+        FileInfoCache.getInstance().set(path, fileList);
     }
 
     private void createEncryptedFile (InputStream inputStream, File target) {
@@ -143,9 +157,11 @@ public class LocalDrive implements StorageStrategy {
     }
 
     @Override
-    public void factoryReset () {
+    public void reset () {
         LOGGER.info("Executing Factory Reset");
+
         deleteDirectory(new File(ROOT_PATH));
+        FileInfoCache.getInstance().clear();
     }
 
     private void deleteDirectory (File directory) {

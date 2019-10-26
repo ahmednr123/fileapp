@@ -1,28 +1,55 @@
 package com.fileapp.storage;
 
+import com.fileapp.cache.FileInfoCache;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
-public interface StorageStrategy {
+public abstract class StorageStrategy {
+    private static Logger LOGGER = Logger.getLogger(StorageStrategy.class.getName());
+
+    // Set isLoaded once the encrypting of files is completed
+    private static boolean isLoaded = false;
+
+    // Set isInitialized if the client hasn't encrypted files
+    private static boolean isInitialized = false;
+
+    private String name;
+
+    StorageStrategy (String name) {
+        this.name = name;
+
+        // Check if .lock exists which would mean the previous copy execution wasn't
+        // completed. The application is factoryReset to overcome the problem
+        if (this.isCorrupt()) {
+            LOGGER.info("Previous executeCopy had failed");
+            factoryReset();
+        } else {
+            boolean isInitialized = this.checkIfInitialized();
+            StorageStrategy.isInitialized =
+                    StorageStrategy.isLoaded = isInitialized;
+        }
+    }
 
     /**
-     * If the client has not encrypted any files
-     *
-     * @return isInitialized?
+     * Check if client has encrypted files.
+     * This can usually be a time consuming task.
      */
-    boolean isInitialized ();
+    abstract boolean checkIfInitialized ();
 
     /**
-     * Checks if all the files are encrypted and
-     * copied to the application destination
+     * Check if .lock exists which would mean the
+     * previous copy execution wasn't completed.
      *
-     * @return isLoaded?
+     * @return isCorrupt?
      */
-    boolean isLoaded ();
+    abstract boolean isCorrupt ();
 
-    ArrayList<FileInfo> getFileList (String ID);
-    InputStream getInputStream (String ID, String key) throws FileNotFoundException;
+    public abstract ArrayList<FileInfo> getFileList (String ID);
+    public abstract InputStream getInputStream (String ID, String key) throws FileNotFoundException;
 
     /**
      * Used to encrypt files from the directory path
@@ -30,7 +57,26 @@ public interface StorageStrategy {
      * @param directory Path to the directory to encrypt
      * @param key Secret key to encrypt the files with
      */
-    void executeCopy (String directory, String key);
+    abstract void executeEncryption (String directory, String key);
+    abstract void reset ();
 
-    void factoryReset();
+    // ==================================================== //
+
+    public String getName() { return name; };
+    public boolean isInitialized () { return isInitialized; }
+    public boolean isLoaded () { return isLoaded; }
+
+    public void encrypt (String directory, String key) {
+        isInitialized = true;
+
+        this.executeEncryption (directory, key);
+
+        isLoaded = true;
+    }
+
+    public void factoryReset() {
+        isInitialized =
+                isLoaded = false;
+        this.reset();
+    }
 }

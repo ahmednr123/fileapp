@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 /**
  * Deletes all encrypted files and resets application state
  */
-@WebServlet(urlPatterns = "/factory-reset")
+@WebServlet(urlPatterns = "/reset")
 public class FactoryReset extends HttpServlet {
     private static Logger LOGGER = Logger.getLogger(FactoryReset.class.getName());
 
@@ -31,7 +31,7 @@ public class FactoryReset extends HttpServlet {
     doPost (HttpServletRequest request, HttpServletResponse response)
             throws IOException
     {
-        LOGGER.info("POST /factory-reset [HIT]");
+        LOGGER.info("POST /reset [HIT]");
         ServletChecker servletChecker = new ServletChecker(response);
 
         servletChecker.getKey(request.getSession());
