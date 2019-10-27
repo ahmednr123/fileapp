@@ -2,6 +2,8 @@ package com.fileapp.servlet;
 
 import com.fileapp.storage.FileInfo;
 import com.fileapp.storage.StorageStrategy;
+import com.fileapp.utils.JSONReply;
+import com.fileapp.utils.ResponseError;
 import com.fileapp.utils.ServletChecker;
 
 import javax.servlet.annotation.WebServlet;
@@ -87,9 +89,9 @@ public class Load extends HttpServlet {
 
         if (key != null) {
             request.getSession().setAttribute("key", key);
-            out.print("ok");
+            out.print(JSONReply.ok("DONE"));
         } else {
-            out.print("err");
+            out.print(JSONReply.error(ResponseError.PARAMETERS_NOT_FOUND.name()));
         }
     }
 }

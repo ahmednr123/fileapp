@@ -39,7 +39,7 @@ public class ServletChecker {
         LOGGER.info("Checking parameters");
         for (String param : params) {
             if (param == null || param.isEmpty()) {
-                writeErrorOut (JSONReply.error(ResponseError.PARAMETERS_NOT_FOUND.name()));
+                writeErrorOut (ResponseError.PARAMETERS_NOT_FOUND.name());
                 passed = false;
                 LOGGER.info("Some Parameters missing");
                 return;
@@ -56,7 +56,7 @@ public class ServletChecker {
     public void mustBeFile (File file) {
         LOGGER.info("Checking if \"" + file.getName() + "\" is a file");
         if (!file.exists() || file.isDirectory()) {
-            writeErrorOut (JSONReply.error(ResponseError.INVALID_PATH.name()));
+            writeErrorOut ( ResponseError.INVALID_PATH.name() );
             passed = false;
             LOGGER.info("\"" + file.getName() + "\" IS NOT a file");
             return;
@@ -72,7 +72,7 @@ public class ServletChecker {
     public void mustBeDirectory (File file) {
         LOGGER.info("Checking if \"" + file.getName() + "\" is a directory");
         if (!file.exists() || !file.isDirectory()) {
-            writeErrorOut (JSONReply.error(ResponseError.INVALID_PATH.name()));
+            writeErrorOut ( ResponseError.INVALID_PATH.name() );
             passed = false;
             LOGGER.info("\"" + file.getName() + "\" IS NOT a directory");
             return;
@@ -91,7 +91,7 @@ public class ServletChecker {
                 (StorageStrategy) ctx.getAttribute("StorageStrategy");
 
         if (!storageStrategy.isLoaded()) {
-            writeErrorOut (JSONReply.error(ResponseError.DIRECTORY_NOT_LOADED.name()));
+            writeErrorOut ( ResponseError.DIRECTORY_NOT_LOADED.name() );
             passed = false;
             LOGGER.info("Application HAS NOT loaded");
             return;
@@ -111,9 +111,10 @@ public class ServletChecker {
 
         try {
             key = (String) session.getAttribute("key");
+            System.out.println("KEY = " + key);
             LOGGER.info("Session key FOUND");
         } catch (Exception e) {
-            writeErrorOut (JSONReply.error(ResponseError.NO_SESSION.name()));
+            writeErrorOut ( ResponseError.NO_SESSION.name() );
             passed = false;
             LOGGER.info("Session key NOT FOUND");
             return null;
@@ -134,7 +135,7 @@ public class ServletChecker {
                 (StorageStrategy) ctx.getAttribute("StorageStrategy");
 
         if (!storageStrategy.isInitialized()) {
-            writeErrorOut (JSONReply.error(ResponseError.NOT_INITIALIZED.name()));
+            writeErrorOut ( ResponseError.NOT_INITIALIZED.name() );
             passed = false;
             LOGGER.info("Application HAS NOT been initialized");
             return;
@@ -154,12 +155,13 @@ public class ServletChecker {
     /**
      * Respond to the request
      *
-     * @param data Data to write to client
+     * @param error Error to write to client
      */
-    private void writeErrorOut (String data) {
+    public void writeErrorOut (String error) {
         try {
             PrintWriter out = response.getWriter();
-            out.print(data);
+            response.addHeader("Error", error);
+            out.print( JSONReply.error(error) );
             out.close();
             LOGGER.info("Error message sent to client");
         } catch (IOException e) {

@@ -1,8 +1,5 @@
 package com.fileapp.storage;
 
-import com.fileapp.cache.FileInfoCache;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,6 +45,7 @@ public abstract class StorageStrategy {
      */
     abstract boolean isCorrupt ();
 
+    abstract long getFileSize (String ID);
     public abstract ArrayList<FileInfo> getFileList (String ID);
     public abstract InputStream getInputStream (String ID, String key) throws FileNotFoundException;
 
@@ -65,6 +63,10 @@ public abstract class StorageStrategy {
     public String getName() { return name; };
     public boolean isInitialized () { return isInitialized; }
     public boolean isLoaded () { return isLoaded; }
+
+    public boolean checkFileSize (String ID, long maxSize) {
+        return (this.getFileSize(ID) <= maxSize);
+    }
 
     public void encrypt (String directory, String key) {
         isInitialized = true;

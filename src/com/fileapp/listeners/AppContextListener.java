@@ -21,6 +21,8 @@ public class AppContextListener implements ServletContextListener {
     /**
      * Initializing StorageStrategy and ExecutorServer
      * to be used within the ServletContext
+     *
+     * Initialize cache
      */
     @Override
     public void
@@ -29,7 +31,7 @@ public class AppContextListener implements ServletContextListener {
         ServletContext ctx = servletContextEvent.getServletContext();
         LOGGER.info("ServletContext Initialized");
 
-        StorageStrategy storageStrategy = new LocalDrive();
+        StorageStrategy storageStrategy = new GoogleDrive();
         ctx.setAttribute("StorageStrategy", storageStrategy);
         LOGGER.info("Initialized StorageStrategy and added to ServletContext");
 
@@ -43,6 +45,7 @@ public class AppContextListener implements ServletContextListener {
 
     /**
      * Shutdown ExecutorService
+     * Destroy cache
      */
     @Override
     public void

@@ -157,6 +157,18 @@ public class GoogleDriveUtil {
         return doesFileExist;
     }
 
+    public static long getFileSize (Drive drive, String file_id) {
+        try {
+            File file = drive.files().get(file_id).setFields("size").execute();
+            LOGGER.info("File: " + file_id + " (size = " + file.getSize() + ")");
+            return file.getSize();
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+        }
+
+        return -1;
+    }
+
     /**
      * Get the ID of file within a directory using a filename
      *
@@ -227,7 +239,7 @@ public class GoogleDriveUtil {
             LOGGER.info("Getting fileInfoList from GoogleDrive");
             FileList result = drive.files().list()
                     .setQ("parents in '"+ folder_id +"'")
-                    .setFields("nextPageToken, files(id, name, mimeType)")
+                    .setFields("nextPageToken, files(id, name, size, mimeType)")
                     .execute();
             return result.getFiles();
         } catch (Exception e) {

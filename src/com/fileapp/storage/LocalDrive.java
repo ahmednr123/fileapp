@@ -62,6 +62,7 @@ public class LocalDrive extends StorageStrategy {
                     new FileInfo(
                             file.getName(),
                             path + "/" + file.getName(),
+                            file.length(),
                             file.isDirectory()
                     )
             );
@@ -70,6 +71,12 @@ public class LocalDrive extends StorageStrategy {
         FileInfoCache.getInstance().set(path, fileInfoList);
 
         return fileInfoList;
+    }
+
+    @Override
+    long getFileSize (String path) {
+        File file = new File(ROOT_PATH + path);
+        return file.length();
     }
 
     @Override
@@ -127,7 +134,7 @@ public class LocalDrive extends StorageStrategy {
                 (new File(full_path)).mkdir();
                 copyFolder(file, path + "/" + file.getName(), full_path, key);
 
-                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), true));
+                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), -1, true));
             } else {
                 LOGGER.info("Encrypting file: " + file.getAbsolutePath());
                 createEncryptedFile(
@@ -135,7 +142,7 @@ public class LocalDrive extends StorageStrategy {
                         new File(full_path)
                 );
 
-                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), false));
+                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), file.length(), false));
             }
         }
 

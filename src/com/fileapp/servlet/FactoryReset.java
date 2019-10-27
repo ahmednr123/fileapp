@@ -41,7 +41,7 @@ public class FactoryReset extends HttpServlet {
                     (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
 
             storageStrategy.factoryReset();
-            request.getSession().removeAttribute("key");
+            request.getSession(false).invalidate();
 
             PrintWriter out = response.getWriter();
             out.print(

@@ -14,6 +14,7 @@ public class FileInfo {
 
     private String name;
     private String path;
+    private long size;
     private boolean isDirectory;
 
     public
@@ -21,6 +22,7 @@ public class FileInfo {
         JSONObject jsonObject = new JSONObject(jsonString);
         this.name = jsonObject.getString("name");
         this.path = jsonObject.getString("path");
+        this.size = jsonObject.getLong("size");
         this.isDirectory = jsonObject.getBoolean("isDirectory");
     }
 
@@ -28,13 +30,15 @@ public class FileInfo {
     FileInfo (JSONObject jsonObject) {
         this.name = jsonObject.getString("name");
         this.path = jsonObject.getString("path");
+        this.size = jsonObject.getLong("size");
         this.isDirectory = jsonObject.getBoolean("isDirectory");
     }
 
     public
-    FileInfo (String name, String path, boolean isDirectory) {
+    FileInfo (String name, String path, long size, boolean isDirectory) {
         this.name = name;
         this.path = path;
+        this.size = size;
         this.isDirectory = isDirectory;
     }
 
@@ -43,6 +47,7 @@ public class FileInfo {
     {
         return "{\"name\":\"" + this.name + "\"," +
                 "\"path\":\"" + this.path + "\"," +
+                "\"size\":" + this.size + "," +
                 "\"isDirectory\":" + this.isDirectory + "}";
     }
 

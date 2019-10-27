@@ -120,6 +120,7 @@ public class GoogleDrive extends StorageStrategy {
                         new FileInfo(
                                 sub_file.getName(),
                                 sub_file.getId(),
+                                sub_file.getSize(),
                                 (sub_file.getMimeType().equals("application/vnd.google-apps.folder"))
                         )
                 );
@@ -129,6 +130,12 @@ public class GoogleDrive extends StorageStrategy {
         FileInfoCache.getInstance().set(ID, fileInfoList);
 
         return fileInfoList;
+    }
+
+    @Override
+    long getFileSize (String ID) {
+        drive = getDrive();
+        return GoogleDriveUtil.getFileSize(drive, ID);
     }
 
     @Override
@@ -192,14 +199,14 @@ public class GoogleDrive extends StorageStrategy {
                         .createFolder(drive, file.getName(), folder_id);
                 copyFolder(file, newFolder_id, key);
 
-                fileList.add(new FileInfo(file.getName(), newFolder_id, true));
+                fileList.add(new FileInfo(file.getName(), newFolder_id, -1, true));
             } else {
                 LOGGER.info("Encrypting file: " + file.getAbsolutePath());
                 String file_id =
                         GoogleDriveUtil
                             .createEncryptedFile(drive, file,  folder_id, key);
 
-                fileList.add(new FileInfo(file.getName(), file_id, false));
+                fileList.add(new FileInfo(file.getName(), file_id, file.length(), false));
             }
         }
 

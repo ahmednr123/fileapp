@@ -1,6 +1,8 @@
 package com.fileapp.servlet;
 
 import com.fileapp.storage.StorageStrategy;
+import com.fileapp.utils.JSONReply;
+import com.fileapp.utils.ResponseError;
 import com.fileapp.utils.ServletChecker;
 
 import javax.servlet.ServletContext;
@@ -48,6 +50,11 @@ public class View extends HttpServlet {
         if ( servletChecker.doesPass() ) {
             StorageStrategy storageStrategy =
                     (StorageStrategy) getServletContext().getAttribute("StorageStrategy");
+
+            if (!storageStrategy.checkFileSize(path, 5000000)) {
+                servletChecker.writeErrorOut( ResponseError.FILE_TOO_BIG.name() );
+                return;
+            }
 
             InputStream inStream = storageStrategy.getInputStream(path, key);
 
