@@ -83,6 +83,7 @@ public class GoogleDrive extends StorageStrategy {
     public ArrayList<FileInfo> getFileList (String ID) {
         Drive drive = getDrive();
 
+        // Check for fileInfoList in cache
         ArrayList<FileInfo> fileList = FileInfoCache.getInstance().get(ID.equals("") ? ROOT_ID : ID);
         if (fileList != null) {
             // Send fileInfoList cache
@@ -110,7 +111,7 @@ public class GoogleDrive extends StorageStrategy {
         if (files == null || files.isEmpty()) {
             System.out.println("No files found.");
         } else {
-            System.out.println("Files:");
+            System.out.println("Files: " + files.size());
             for (File sub_file : files) {
                 System.out.printf("%s - %s - %s\n",
                         sub_file.getName(), sub_file.getId(),
@@ -199,7 +200,7 @@ public class GoogleDrive extends StorageStrategy {
                         .createFolder(drive, file.getName(), folder_id);
                 copyFolder(file, newFolder_id, key);
 
-                fileList.add(new FileInfo(file.getName(), newFolder_id, -1, true));
+                fileList.add(new FileInfo(file.getName(), newFolder_id, null, true));
             } else {
                 LOGGER.info("Encrypting file: " + file.getAbsolutePath());
                 String file_id =

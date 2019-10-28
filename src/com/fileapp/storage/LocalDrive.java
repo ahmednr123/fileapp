@@ -38,7 +38,7 @@ public class LocalDrive extends StorageStrategy {
 
     @Override
     public ArrayList<FileInfo> getFileList (String path) {
-        // Check if fileInfoList was successfully cached
+        // Check for fileInfoList in cache
         ArrayList<FileInfo> fileList = FileInfoCache.getInstance().get(path);
         if (fileList != null) {
             // Send fileInfoList cache
@@ -134,7 +134,7 @@ public class LocalDrive extends StorageStrategy {
                 (new File(full_path)).mkdir();
                 copyFolder(file, path + "/" + file.getName(), full_path, key);
 
-                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), -1, true));
+                fileList.add(new FileInfo(file.getName(), path + "/" + file.getName(), (long)-1, true));
             } else {
                 LOGGER.info("Encrypting file: " + file.getAbsolutePath());
                 createEncryptedFile(

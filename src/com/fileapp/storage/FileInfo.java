@@ -14,7 +14,7 @@ public class FileInfo {
 
     private String name;
     private String path;
-    private long size;
+    private Long size;
     private boolean isDirectory;
 
     public
@@ -35,10 +35,14 @@ public class FileInfo {
     }
 
     public
-    FileInfo (String name, String path, long size, boolean isDirectory) {
+    FileInfo (String name, String path, Long size, boolean isDirectory) {
         this.name = name;
         this.path = path;
+
+        if (size == null)
+            size = (long)-1;
         this.size = size;
+
         this.isDirectory = isDirectory;
     }
 

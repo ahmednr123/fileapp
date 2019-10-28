@@ -39,7 +39,7 @@ public class AppContextListener implements ServletContextListener {
         ctx.setAttribute("executor", executor);
         LOGGER.info("Initialized ExecutorService and added to ServletContext");
 
-        FileInfoCache.getInstance().initialize(storageStrategy.getName());
+        FileInfoCache.initialize(storageStrategy.getName());
         LOGGER.info("Initialized FileInfoCache");
     }
 
