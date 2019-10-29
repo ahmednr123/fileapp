@@ -205,7 +205,7 @@ public class GoogleDrive extends StorageStrategy {
                 LOGGER.info("Encrypting file: " + file.getAbsolutePath());
                 String file_id =
                         GoogleDriveUtil
-                            .createEncryptedFile(drive, file,  folder_id, key);
+                        .createEncryptedFile(drive, file, folder_id, key);
 
                 fileList.add(new FileInfo(file.getName(), file_id, file.length(), false));
             }

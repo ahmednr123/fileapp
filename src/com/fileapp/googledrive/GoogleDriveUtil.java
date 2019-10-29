@@ -15,6 +15,7 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.GeneratedIds;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -280,5 +281,18 @@ public class GoogleDriveUtil {
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
         }
+    }
+
+    public static ArrayList<String> getFileIDs (Drive drive, int num) {
+        GeneratedIds allIds = null;
+        try {
+            allIds = drive.files().generateIds()
+                    .setSpace("drive").setCount(num).execute();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return (ArrayList<String>) allIds.getIds();
     }
 }
