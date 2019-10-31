@@ -2,10 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6848942b-c230-4ed2-ba0a-352a790ba663" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/googledrive/GoogleDriveUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/googledrive/GoogleDriveUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/storage/FileInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/WEB-INF/classes/com/fileapp/storage/FileInfo.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/com/fileapp/googledrive/GoogleDriveUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/googledrive/GoogleDriveUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/com/fileapp/storage/GoogleDrive.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/storage/GoogleDrive.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/fileapp/storage/FileInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/fileapp/storage/FileInfo.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

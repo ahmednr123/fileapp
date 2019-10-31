@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Stores Information of the file.
@@ -78,6 +79,8 @@ public class FileInfo {
             JSONObject jsonObject = (JSONObject) object;
             fileList.add(new FileInfo(jsonObject));
         }
+
+        Collections.reverse(fileList);
 
         return fileList;
     }
